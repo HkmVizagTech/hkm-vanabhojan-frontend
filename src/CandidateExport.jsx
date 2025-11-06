@@ -97,7 +97,7 @@ const CandidateExport = () => {
       
       setLoading(true);
       try {
-        const response = await fetch("https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users", {
+        const response = await fetch("http://localhost:3300/users", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -182,13 +182,13 @@ const CandidateExport = () => {
 
       switch (action) {
         case 'accept':
-          endpoint = `https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/accept/${candidateId}`;
+          endpoint = `http://localhost:3300/users/admin/accept/${candidateId}`;
           break;
         case 'reject':
-          endpoint = `https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/reject/${candidateId}`;
+          endpoint = `http://localhost:3300/users/admin/reject/${candidateId}`;
           break;
         case 'refund':
-          endpoint = `https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/refund/${candidateId}`;
+          endpoint = `http://localhost:3300/users/admin/refund/${candidateId}`;
           break;
         default:
           console.error('Invalid action:', action);
@@ -280,6 +280,7 @@ const CandidateExport = () => {
           : "",
         "Payment Status": row.paymentStatus,
         "Payment Method": row.paymentMethod,
+        "How Found": row.howDidYouKnow || "Not specified",
         "Registration Date": row.registrationDate
           ? new Date(row.registrationDate).toLocaleString()
           : "",
@@ -457,6 +458,7 @@ const CandidateExport = () => {
                 <Th>Reg Date</Th>
                 <Th>Payment</Th>
                 <Th>Payment Method</Th>
+                <Th>Source</Th>
                 <Th>Attendance</Th>
                 <Th>Admin Action</Th>
               </Tr>
@@ -590,6 +592,19 @@ const CandidateExport = () => {
                       </Tag>
                     )}
                   </Td>
+                  <Td>
+                    <Tooltip label={candidate.howDidYouKnow || "Not specified"} fontSize="xs">
+                      <Text fontSize="sm" noOfLines={1} maxW="120px">
+                        {candidate.howDidYouKnow ? (
+                          candidate.howDidYouKnow.length > 15 
+                            ? `${candidate.howDidYouKnow.substring(0, 15)}...`
+                            : candidate.howDidYouKnow
+                        ) : (
+                          <chakra.span color="gray.400">-</chakra.span>
+                        )}
+                      </Text>
+                    </Tooltip>
+                  </Td>
                
                   <Td>
                     {candidate.attendance ? (
@@ -624,7 +639,7 @@ const CandidateExport = () => {
               ))}
               {filteredData?.length === 0 && (
                 <Tr>
-                  <Td colSpan={16}>
+                  <Td colSpan={14}>
                     <Text color="gray.400" textAlign="center" py={10}>
                       No candidates found.
                     </Text>
@@ -777,6 +792,13 @@ const CandidateExport = () => {
                                 : 'N/A'
                               }
                             </Text>
+                          </HStack>
+                          
+                          <HStack>
+                            <Text fontSize="sm" color="gray.500" minW="60px">Source:</Text>
+                            <Tag size="sm" colorScheme="teal" variant="outline">
+                              {selectedCandidate.howDidYouKnow || 'Not specified'}
+                            </Tag>
                           </HStack>
                         </VStack>
                       </GridItem>

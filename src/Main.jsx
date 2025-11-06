@@ -46,6 +46,7 @@ const initialState = {
   course: "",
   year: "",
   dob: "",
+  howDidYouKnow: "",
   amount: "1.00",
   studentIdCard: null,
   studentIdCardPreview: "",
@@ -53,7 +54,7 @@ const initialState = {
 
 const RAZORPAY_KEY = "rzp_live_HBAc3tlMK0X5Xd";
 
-const API_BASE = "https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users";
+const API_BASE = "http://localhost:3300/users";
 
 const Main = () => {
   const toast = useToast();
@@ -184,6 +185,7 @@ const Main = () => {
       course,
       year,
       dob,
+      howDidYouKnow,
       studentIdCard,
     } = formData;
 
@@ -197,6 +199,7 @@ const Main = () => {
     if (!email) newErrors.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Enter a valid email";
     if (!gender) newErrors.gender = "Please select gender";
+    if (!howDidYouKnow) newErrors.howDidYouKnow = "Please select how you came to know about this fest";
     if (!collegeOrWorking)
       newErrors.collegeOrWorking = "Please select one option";
     if (collegeOrWorking === "Working" && !companyName.trim())
@@ -227,7 +230,7 @@ const Main = () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
     try {
-      const baseAmount = formData.collegeOrWorking === "College" ? 99 : 1200;
+      const baseAmount = formData.collegeOrWorking === "College" ? 1 : 1200;
       const amountInPaise = baseAmount * 100;
 
       let orderData;
@@ -787,6 +790,25 @@ const Main = () => {
                   )}
                 </FormControl>
               )}
+              <FormControl isInvalid={!!errors.howDidYouKnow}>
+                <FormLabel color="#20603d">How you came to know about this Fest <Text as="span" color="red.500">*</Text></FormLabel>
+                <ChakraSelect
+                  value={formData.howDidYouKnow}
+                  onChange={(e) => handleInputChange("howDidYouKnow", e.target.value)}
+                  borderWidth={2}
+                  _focus={{ borderColor: "#20603d" }}
+                  bg="rgba(255,255,255,0.93)"
+                >
+                  <option value="">--Select--</option>
+                  <option value="Whatsapp Message">Whatsapp Message</option>
+                  <option value="College whatsapp group">College whatsapp group</option>
+                  <option value="College Notice Board">College Notice Board</option>
+                  <option value="Instagram Reel">Instagram Reel</option>
+                  <option value="At your hostel">At your hostel</option>
+                  <option value="Any other way">Any other way</option>
+                </ChakraSelect>
+                <FormErrorMessage>{errors.howDidYouKnow}</FormErrorMessage>
+              </FormControl>
               <Button
                 onClick={handlePayment}
                 isLoading={isSubmitting}
