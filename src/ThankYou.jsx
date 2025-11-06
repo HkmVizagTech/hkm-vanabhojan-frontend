@@ -41,31 +41,44 @@ export default function ThankYouPage() {
     try {
       console.log(`🔍 Checking payment status for ID: ${id}...`);
       const res = await axios.get(`https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/verify-payment/${id}`);
+      console.log("📋 Full API Response:", res.data);
+      console.log("✅ Payment Status from API:", res.data.candidate?.paymentStatus);
+      
       if (res.status === 200) {
         if (res.data.success && res.data.candidate) {
           console.log("✅ Payment verification successful:", res.data.candidate);
           setCandidate(res.data.candidate);
           
-          if (res.data.candidate.paymentStatus === 'Paid') {
+          // Check payment status more reliably
+          const paymentStatus = res.data.candidate.paymentStatus;
+          console.log(`💳 Processing payment status: ${paymentStatus}`);
+          
+          if (paymentStatus === 'Paid') {
+            console.log("🎉 Payment confirmed as PAID");
             setStatus('success');
             return 'success';
-          } else if (res.data.candidate.paymentStatus === 'Failed') {
+          } else if (paymentStatus === 'Failed') {
+            console.log("❌ Payment confirmed as FAILED");
             setStatus('failed');
             return 'failed';
           } else {
+            console.log("⏳ Payment still PENDING");
             setStatus('pending');
             return 'pending';
           }
         } else {
+          console.log("❌ API response missing success or candidate data");
           setStatus('invalid');
           return 'invalid';
         }
       } else {
+        console.log("❌ API returned non-200 status:", res.status);
         setStatus('error');
         return 'error';
       }
     } catch (err) {
       console.error("❌ Payment verification error:", err);
+      console.error("❌ Error details:", err.response?.data);
       setStatus('error');
       return 'error';
     }
