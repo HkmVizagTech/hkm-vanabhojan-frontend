@@ -54,7 +54,7 @@ const initialState = {
 
 const RAZORPAY_KEY = "rzp_live_HBAc3tlMK0X5Xd";
 
-const API_BASE = "http://localhost:3300/users";
+const API_BASE = "https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users";
 
 const Main = () => {
   const toast = useToast();
@@ -81,7 +81,7 @@ const Main = () => {
     const fetchColleges = async () => {
       try {
         const res = await axios.get(
-          "https://vrc-server-110406681774.asia-south1.run.app/college"
+          "https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/college"
         );
         const options = res.data.map((college) => ({
           label: college.name,

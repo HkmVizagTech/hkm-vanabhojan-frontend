@@ -40,7 +40,8 @@ export default function ThankYouPage() {
     
     try {
       console.log(`🔍 Checking payment status for ID: ${id}...`);
-      const res = await axios.get(`http://localhost:3300/users/verify-payment/${id}`);
+      const res = await axios.get(`https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/verify-payment/${id}`);
+      setPaymentStatus(res.data.payment.status);
       if (res.status === 200) {
         if (res.data.success && res.data.candidate) {
           console.log("✅ Payment verification successful:", res.data.candidate);

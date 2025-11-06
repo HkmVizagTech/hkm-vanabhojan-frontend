@@ -20,7 +20,7 @@ import { FaUniversity } from 'react-icons/fa';
 import axios from 'axios';
 import Layout from './component/Layout';
 
-const API_URL = 'https://vrc-server-110406681774.asia-south1.run.app/college';
+const API_URL = 'https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/college';
 
 const CollegeManager = () => {
   const [colleges, setColleges] = useState([]);

@@ -97,7 +97,7 @@ const CandidateExport = () => {
       
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:3300/users", {
+        const response = await fetch("https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -182,13 +182,13 @@ const CandidateExport = () => {
 
       switch (action) {
         case 'accept':
-          endpoint = `http://localhost:3300/users/admin/accept/${candidateId}`;
+          endpoint = `https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/accept/${candidateId}`;
           break;
         case 'reject':
-          endpoint = `http://localhost:3300/users/admin/reject/${candidateId}`;
+          endpoint = `https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/reject/${candidateId}`;
           break;
         case 'refund':
-          endpoint = `http://localhost:3300/users/admin/refund/${candidateId}`;
+          endpoint = `https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/refund/${candidateId}`;
           break;
         default:
           console.error('Invalid action:', action);
