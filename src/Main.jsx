@@ -211,8 +211,7 @@ const Main = () => {
     if (collegeOrWorking === "College" && !course.trim()) newErrors.course = "Course is required";
     if (collegeOrWorking === "College" && !year)
       newErrors.year = "Year is required";
-    if (collegeOrWorking === "College" && !studentIdCard)
-      newErrors.studentIdCard = "Please upload your student ID card";
+    // Student ID card is now optional for college students
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -749,9 +748,9 @@ const Main = () => {
               )}
               {formData.collegeOrWorking === "College" && (
                 <FormControl isInvalid={!!errors.studentIdCard}>
-                  <FormLabel color="#20603d">Student ID Card <Text as="span" color="red.500">*</Text></FormLabel>
+                  <FormLabel color="#20603d">Student ID Card <Text as="span" color="gray.500">(Optional)</Text></FormLabel>
                   <Text fontSize="sm" color="gray.600" mb={2}>
-                    Please upload a clear photo of your student ID card (JPG, PNG, WebP - Max 5MB)
+                    You can upload a clear photo of your student ID card if available (JPG, PNG, WebP - Max 5MB)
                   </Text>
                   <Input
                     type="file"
