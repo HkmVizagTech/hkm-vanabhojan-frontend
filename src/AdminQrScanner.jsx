@@ -3,7 +3,6 @@ import {
   BrowserMultiFormatReader,
   NotFoundException,
 } from "@zxing/library";
-import axios from "axios";
 import { useToast } from "@chakra-ui/react"; 
 
 const SuccessIcon = () => (

@@ -21,8 +21,6 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { CheckCircleIcon, PhoneIcon } from "@chakra-ui/icons";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import Layout from "./component/Layout";
 
@@ -131,35 +129,6 @@ const AdminAttendanceScannedList = () => {
   const uniqueColleges = [
     ...new Set((Array.isArray(data) ? data : []).map((c) => c.college).filter(Boolean)),
   ];
-
-  const exportToExcel = () => {
-    const dataToExport = Array.isArray(filteredData) ? filteredData : [];
-    const worksheet = XLSX.utils.json_to_sheet(
-      dataToExport.map((row, idx) => ({
-        "S.No": idx + 1,
-        Name: row.name,
-        Email: row.email,
-        Phone: row.phone,
-        Gender: row.gender,
-        College: row.college,
-        Branch: row.branch,
-        "Scanned At": row.adminAttendanceDate
-          ? new Date(row.adminAttendanceDate).toLocaleString()
-          : "",
-      }))
-    );
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "AdminScannedAttendance");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-
-    const file = new Blob([excelBuffer], {
-      type: "application/octet-stream",
-    });
-    saveAs(file, "admin_scanned_attendance.xlsx");
-  };
 
   if (loading)
     return (
