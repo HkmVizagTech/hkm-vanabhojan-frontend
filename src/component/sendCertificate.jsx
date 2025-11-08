@@ -8,8 +8,6 @@ import {
   Checkbox,
   Container,
   Flex,
-  Grid,
-  GridItem,
   Heading,
   Text,
   VStack,
@@ -32,11 +30,6 @@ import {
   Stack,
   useColorModeValue,
   Select,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Input,
   InputGroup,
   InputLeftElement,
@@ -104,11 +97,11 @@ const SendCertificate = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [allCandidates, searchTerm, statusFilter, collegeFilter]);
+  }, [allCandidates, searchTerm, statusFilter, collegeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     updateDisplayedCandidates();
-  }, [filteredCandidates, currentPage, itemsPerPage]);
+  }, [filteredCandidates, currentPage, itemsPerPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchEligibleCandidates = async () => {
     try {

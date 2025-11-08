@@ -116,7 +116,7 @@ export default function ThankYouPage() {
     return () => {
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (status === 'loading') {
     return (

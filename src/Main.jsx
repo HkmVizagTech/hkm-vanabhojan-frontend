@@ -95,7 +95,7 @@ const Main = () => {
       }
     };
     fetchColleges();
-  }, []);
+  }, []); 
 
 
   useEffect(() => {
@@ -186,7 +186,6 @@ const Main = () => {
       year,
       dob,
       howDidYouKnow,
-      studentIdCard,
     } = formData;
 
     if (!name.trim()) newErrors.name = "Name is required";
