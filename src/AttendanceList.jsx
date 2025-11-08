@@ -45,7 +45,8 @@ const AttendanceList = () => {
       const token = localStorage.getItem("token");
       
       try {
-        const response = await fetch('https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/attendance-list', {
+        // Use getAllCandidates endpoint to get ALL registrations (attended + not attended)
+        const response = await fetch('http://localhost:3300/users/', {
           method: 'GET',
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -62,18 +63,25 @@ const AttendanceList = () => {
         }
 
         const data = await response.json();
-        console.log('Attendance API Response:', data);
+        console.log('All Candidates API Response:', data);
         const records = Array.isArray(data) ? data : (data.candidates || data.records || []);
         
         if (Array.isArray(records)) {
-          setData(records);
+          // Sort by phone number to group family members together
+          const sortedRecords = records.sort((a, b) => {
+            if (a.whatsappNumber === b.whatsappNumber) {
+              return a.name.localeCompare(b.name);
+            }
+            return a.whatsappNumber.localeCompare(b.whatsappNumber);
+          });
+          setData(sortedRecords);
         } else {
-          console.error('Attendance API response is not an array:', data);
+          console.error('All Candidates API response is not an array:', data);
           setData([]); 
         }
         setLoading(false);
       } catch (err) {
-        console.error('Failed to fetch attendance list', err);
+        console.error('Failed to fetch candidates list', err);
         setData([]); 
         setLoading(false);
       }
@@ -113,7 +121,7 @@ const AttendanceList = () => {
 
   const uniqueColleges = [...new Set((Array.isArray(data) ? data : []).map(c => c.college).filter(Boolean))];
 
-  const exportToExcel = () => {
+    const exportToExcel = () => {
     const dataToExport = Array.isArray(filteredData) ? filteredData : [];
     const worksheet = XLSX.utils.json_to_sheet(
       dataToExport.map((row, idx) => ({
@@ -124,9 +132,9 @@ const AttendanceList = () => {
         'College/Company': row.college,
         Branch: row.branch,
         Phone: row.whatsappNumber,
-        Attendance: row.attendance ? 'Yes' : 'No',
-        'Attendance Date': row.attendanceDate
-          ? new Date(row.attendanceDate).toLocaleString()
+        Attendance: (row.adminAttendance || row.attendance) ? 'Yes' : 'No',
+        'Attendance Date': (row.adminAttendanceDate || row.attendanceDate)
+          ? new Date(row.adminAttendanceDate || row.attendanceDate).toLocaleString()
           : '',
         'Registration Date': row.registrationDate
           ? new Date(row.registrationDate).toLocaleString()
@@ -134,7 +142,7 @@ const AttendanceList = () => {
       }))
     );
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'All Registrations');
     const excelBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
@@ -143,7 +151,7 @@ const AttendanceList = () => {
     const file = new Blob([excelBuffer], {
       type: 'application/octet-stream',
     });
-    saveAs(file, 'attendance.xlsx');
+    saveAs(file, 'all-registrations-attendance.xlsx');
   };
 
   if (loading)
@@ -166,7 +174,7 @@ const AttendanceList = () => {
       >
         <Flex justify="space-between" align="center" mb={6} wrap="wrap">
           <Heading size="lg" color="teal.700">
-            Attendance List
+            All Registrations & Attendance
           </Heading>
           <Button
             colorScheme="teal"
@@ -227,9 +235,9 @@ const AttendanceList = () => {
               />
             </FormControl>
             <FormControl w="220px">
-              <FormLabel fontSize="sm">Search</FormLabel>
+              <FormLabel fontSize="sm">Search (Name, Phone, Email, College)</FormLabel>
               <Input
-                placeholder="Name, email, phone, college..."
+                placeholder="Enter phone number to see all family members..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 bg="gray.50"
@@ -239,9 +247,15 @@ const AttendanceList = () => {
           </Flex>
         </Box>
 
-        <HStack mb={4}>
-          <Badge colorScheme="purple" fontSize="lg">
-            Total Marked: {filteredData?.length || 0}
+        <HStack mb={4} spacing={4} wrap="wrap">
+          <Badge colorScheme="blue" fontSize="lg">
+            Total Registrations: {filteredData?.length || 0}
+          </Badge>
+          <Badge colorScheme="green" fontSize="lg">
+            Attended: {filteredData?.filter(c => c.adminAttendance || c.attendance)?.length || 0}
+          </Badge>
+          <Badge colorScheme="orange" fontSize="lg">
+            Not Attended: {filteredData?.filter(c => !c.adminAttendance && !c.attendance)?.length || 0}
           </Badge>
         </HStack>
 
@@ -262,12 +276,31 @@ const AttendanceList = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredData.map((candidate, idx) => (
-                <Tr key={candidate._id} _hover={{ bg: 'gray.50' }}>
-                  <Td>{idx + 1}</Td>
-                  <Td>
-                    <Text fontWeight="semibold">{candidate.name}</Text>
-                  </Td>
+              {filteredData.map((candidate, idx) => {
+                // Check if this phone number has multiple registrations (family members)
+                const familyMembers = filteredData.filter(c => c.whatsappNumber === candidate.whatsappNumber);
+                const isFamily = familyMembers.length > 1;
+                const familyAttended = familyMembers.filter(c => c.adminAttendance || c.attendance).length;
+                
+                return (
+                  <Tr 
+                    key={candidate._id} 
+                    _hover={{ bg: 'gray.50' }}
+                    bg={isFamily ? 'blue.25' : 'white'}
+                    borderLeft={isFamily ? '4px solid' : 'none'}
+                    borderLeftColor={isFamily ? 'blue.300' : 'transparent'}
+                  >
+                    <Td>{idx + 1}</Td>
+                    <Td>
+                      <HStack spacing={2}>
+                        <Text fontWeight="semibold">{candidate.name}</Text>
+                        {isFamily && (
+                          <Badge colorScheme="blue" size="sm">
+                            Family ({familyAttended}/{familyMembers.length})
+                          </Badge>
+                        )}
+                      </HStack>
+                    </Td>
                   <Td>{candidate.gender}</Td>
                   <Td>
                     <Tooltip label={candidate.whatsappNumber} fontSize="xs">
@@ -293,15 +326,21 @@ const AttendanceList = () => {
                     </Tooltip>
                   </Td>
                   <Td>
-                    {candidate.attendance ? (
-                      <CheckCircleIcon color="green.400" />
+                    {candidate.adminAttendance || candidate.attendance ? (
+                      <HStack spacing={2}>
+                        <CheckCircleIcon color="green.500" />
+                        <Badge colorScheme="green" size="sm">Attended</Badge>
+                      </HStack>
                     ) : (
-                      <WarningIcon color="gray.400" />
+                      <HStack spacing={2}>
+                        <WarningIcon color="orange.500" />
+                        <Badge colorScheme="orange" size="sm">Not Attended</Badge>
+                      </HStack>
                     )}
                   </Td>
                   <Td>
-                    {candidate.attendanceDate
-                      ? new Date(candidate.attendanceDate).toLocaleString()
+                    {candidate.adminAttendanceDate || candidate.attendanceDate
+                      ? new Date(candidate.adminAttendanceDate || candidate.attendanceDate).toLocaleString()
                       : '-'}
                   </Td>
                   <Td>
@@ -312,12 +351,13 @@ const AttendanceList = () => {
                       : '-'}
                   </Td>
                 </Tr>
-              ))}
+                );
+              })}
               {filteredData.length === 0 && (
                 <Tr>
                   <Td colSpan={10}>
                     <Text color="gray.400" textAlign="center" py={10}>
-                      No attendance records found.
+                      No registration records found.
                     </Text>
                   </Td>
                 </Tr>

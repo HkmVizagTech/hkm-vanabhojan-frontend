@@ -13,7 +13,12 @@ import {
   Text,
   Icon,
   Image,
-  Link, 
+  Link,
+  SimpleGrid,
+  VStack,
+  HStack,
+  Badge,
+  Divider,
 } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons"; 
 import { QRCodeSVG } from "qrcode.react";
@@ -22,17 +27,15 @@ const Attendence = () => {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [successName, setSuccessName] = useState("");
-  const [attendanceToken, setAttendanceToken] = useState("");
-  const [attendanceDate, setAttendanceDate] = useState(""); 
+  const [candidates, setCandidates] = useState([]);
+  const [totalCandidates, setTotalCandidates] = useState(0);
   const [notFound, setNotFound] = useState(false); 
   const [genericError, setGenericError] = useState(""); 
 
   const handleSubmit = async () => {
     setError("");
-    setSuccessName("");
-    setAttendanceToken("");
-    setAttendanceDate(""); 
+    setCandidates([]);
+    setTotalCandidates(0);
     setNotFound(false); 
     setGenericError(""); 
     const trimmedPhone = phone.trim().replace(/\D/g, "");
@@ -44,7 +47,7 @@ const Attendence = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/mark-attendance", {
+      const res = await fetch("http://localhost:3300/users/get-qr-codes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ whatsappNumber: trimmedPhone }),
@@ -53,21 +56,16 @@ const Attendence = () => {
       const data = await res.json();
 
       if (res.ok) {
-        if ((data.status === "already-marked" || data.status === "success") && data.attendanceToken) {
-          setAttendanceToken(data.attendanceToken);
-          setSuccessName(data.name || "");
-          setAttendanceDate(data.attendanceDate || ""); 
-        }
-
-        if (data.status === "already-marked") {
-          setSuccessName(data.name);
+        console.log("✅ QR codes response:", data);
+        
+        if (data.candidates && data.candidates.length > 0) {
+          setCandidates(data.candidates);
+          setTotalCandidates(data.totalCandidates || data.candidates.length);
           setPhone("");
-        } else if (data.status === "success") {
-          setSuccessName(data.name);
-          setPhone("");
+        } else {
+          setGenericError("No QR codes found for this number");
         }
       } else {
-       
         const errMsg = data?.message?.toLowerCase() || "";
         if (
           errMsg.includes("not found") ||
@@ -76,7 +74,7 @@ const Attendence = () => {
         ) {
           setNotFound(true);
         } else {
-          setGenericError(data.message || "Could not mark attendance");
+          setGenericError(data.message || "Could not fetch QR codes");
         }
       }
     } catch (err) {
@@ -103,10 +101,10 @@ const Attendence = () => {
         textAlign="center"
       >
         <Heading mb={2} size="lg" color="teal.600" fontWeight="bold">
-          Mark Attendance
+          View QR Codes
         </Heading>
         <Text mb={7} fontSize="md" color="gray.500">
-          Enter your WhatsApp mobile number to mark your attendance.
+          Enter your WhatsApp mobile number to view all your QR codes for attendance.
         </Text>
 
         <form
@@ -148,14 +146,14 @@ const Attendence = () => {
             width="full"
             type="submit"
             isLoading={loading}
-            loadingText="Marking..."
+            loadingText="Loading..."
             disabled={loading || phone.length !== 10}
             fontWeight="bold"
             fontSize="lg"
             borderRadius="lg"
             boxShadow="md"
           >
-            Mark Attendance
+            View QR Codes
           </Button>
         </form>
 
@@ -195,42 +193,114 @@ const Attendence = () => {
           </Box>
         )}
 
-        {attendanceToken && (
+        {candidates.length > 0 && (
           <Box mt={8} textAlign="center">
-            <Icon as={CheckCircleIcon} w={12} h={12} color="green.400" />
-            {successName && (
-              <>
-                <Text mt={3} fontSize="xl" fontWeight="bold" color="green.600">
-                  Attendance marked for
-                </Text>
-                <Text fontSize="2xl" fontWeight="extrabold" color="teal.700">
-                  {successName}
-                </Text>
-              </>
-            )}
-            {attendanceDate && (
-              <Text fontSize="md" color="gray.700" mt={2}>
-                Attendance marked on: <b>{formatDate(attendanceDate)}</b>
+            <Icon as={CheckCircleIcon} w={12} h={12} color="blue.400" />
+            <Text mt={3} fontSize="xl" fontWeight="bold" color="blue.600">
+              Found {totalCandidates} registration{totalCandidates > 1 ? 's' : ''} for this number
+            </Text>
+            
+            <Text fontSize="lg" color="teal.700" mb={4} mt={4}>
+              QR Code{totalCandidates > 1 ? 's' : ''} for Attendance
+            </Text>
+
+            <SimpleGrid columns={{ base: 1, md: totalCandidates > 2 ? 2 : 1 }} spacing={6} mt={6}>
+              {candidates.map((candidate, index) => (
+                <Box 
+                  key={candidate.id || index}
+                  p={4} 
+                  bg={candidate.isAttended ? "green.50" : "gray.50"}
+                  borderRadius="xl" 
+                  border="2px solid"
+                  borderColor={candidate.isAttended ? "green.300" : "orange.300"}
+                  textAlign="center"
+                >
+                  <VStack spacing={3}>
+                    <HStack justify="center" align="center" wrap="wrap">
+                      <Text fontSize="lg" fontWeight="bold" color="teal.700">
+                        {candidate.name}
+                      </Text>
+                      {candidate.isAttended ? (
+                        <Badge colorScheme="green" fontSize="xs">
+                          ✅ Attended
+                        </Badge>
+                      ) : (
+                        <Badge colorScheme="orange" fontSize="xs">
+                          ⏳ Not Attended
+                        </Badge>
+                      )}
+                    </HStack>
+                    
+                    {candidate.college && (
+                      <Text fontSize="sm" color="gray.600">
+                        {candidate.college}
+                      </Text>
+                    )}
+                    
+                    {candidate.course && candidate.year && (
+                      <Text fontSize="sm" color="gray.600">
+                        {candidate.course} - {candidate.year}{candidate.year === '1' ? 'st' : candidate.year === '2' ? 'nd' : candidate.year === '3' ? 'rd' : 'th'} Year
+                      </Text>
+                    )}
+
+                    <Box display="flex" justifyContent="center" alignItems="center" bg="white" p={3} borderRadius="lg">
+                      <QRCodeSVG value={candidate.attendanceToken} size={160} />
+                    </Box>
+
+                    {(candidate.attendanceDate || candidate.adminAttendanceDate) && (
+                      <Text fontSize="xs" color="gray.500">
+                        Attended: {formatDate(candidate.adminAttendanceDate || candidate.attendanceDate)}
+                      </Text>
+                    )}
+                    
+                    {!candidate.isAttended && (
+                      <Text fontSize="xs" color="orange.600" fontWeight="bold">
+                        📱 Show this QR to admin for attendance
+                      </Text>
+                    )}
+                  </VStack>
+                </Box>
+              ))}
+            </SimpleGrid>
+
+            <Box mt={6}>
+              <Image
+                mx="auto"
+                src="https://cdn.dribbble.com/users/1615584/screenshots/4187826/check02.gif"
+                alt="Success"
+                boxSize="80px"
+                borderRadius="full"
+                objectFit="cover"
+              />
+              <Text mt={2} fontSize="md" fontWeight="bold" color="teal.600">
+                Show {totalCandidates > 1 ? 'individual QR codes' : 'this QR code'} to admin for attendance.
               </Text>
-            )}
-            <Text fontSize="lg" color="teal.700" mb={2} mt={2}>
-              Show this QR at Reporting Counter and Collect Entry Band
-            </Text>
-            <Box display="flex" justifyContent="center" alignItems="center">
-              <QRCodeSVG value={attendanceToken} size={200} />
+              {totalCandidates > 1 && (
+                <Text mt={1} fontSize="sm" color="gray.600">
+                  Each person must scan their own QR code individually.
+                </Text>
+              )}
+              
+              {/* Show count of attended vs not attended */}
+              {(() => {
+                const attendedCount = candidates.filter(c => c.isAttended).length;
+                const notAttendedCount = totalCandidates - attendedCount;
+                return (
+                  <HStack justify="center" mt={3} spacing={4}>
+                    {attendedCount > 0 && (
+                      <Badge colorScheme="green" fontSize="sm">
+                        ✅ {attendedCount} Attended
+                      </Badge>
+                    )}
+                    {notAttendedCount > 0 && (
+                      <Badge colorScheme="orange" fontSize="sm">
+                        ⏳ {notAttendedCount} Pending
+                      </Badge>
+                    )}
+                  </HStack>
+                );
+              })()}
             </Box>
-            <Image
-              mt={2}
-              mx="auto"
-              src="https://cdn.dribbble.com/users/1615584/screenshots/4187826/check02.gif"
-              alt="Success"
-              boxSize="80px"
-              borderRadius="full"
-              objectFit="cover"
-            />
-            <Text mt={4} fontSize="md" fontWeight="bold" color="teal.600">
-              Please visit the admin counter.
-            </Text>
           </Box>
         )}
       </Box>

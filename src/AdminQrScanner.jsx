@@ -26,7 +26,10 @@ const AdminQrScanner = () => {
   const videoRef = useRef(null);
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
-  const [candidate, setCandidate] = useState(null);
+  const [familyMembers, setFamilyMembers] = useState([]);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [newlyScanned, setNewlyScanned] = useState(0);
+  const [scannedBy, setScannedBy] = useState("");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const toast = useToast();
@@ -56,7 +59,10 @@ const AdminQrScanner = () => {
               setError("");
               setStatus("");
               setMessage("");
-              setCandidate(null);
+              setFamilyMembers([]);
+              setTotalMembers(0);
+              setNewlyScanned(0);
+              setScannedBy("");
 
              
               const now = Date.now();
@@ -80,7 +86,7 @@ const AdminQrScanner = () => {
                 const token = localStorage.getItem("token");
                 
                 const res = await fetch(
-                  "https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/admin/attendance-scan",
+                  "http://localhost:3300/users/admin/attendance-scan",
                   {
                     method: "POST",
                     headers: {
@@ -93,7 +99,24 @@ const AdminQrScanner = () => {
                 
                 const response = await res.json();
                 console.log("✅ Backend response:", response);
-                setCandidate(response.data);
+                
+                if (response.familyMembers && response.familyMembers.length > 0) {
+                  // New format: multiple family members
+                  setFamilyMembers(response.familyMembers);
+                  setTotalMembers(response.totalMembers || response.familyMembers.length);
+                  setNewlyScanned(response.newlyScanned || 0);
+                  setScannedBy(response.scannedPerson || "");
+                  setStatus(response.status);
+                  setMessage(response.message);
+                } else if (response.data) {
+                  // Single candidate format (backward compatibility)
+                  setFamilyMembers([response.data]);
+                  setTotalMembers(1);
+                  setNewlyScanned(response.status === "success" ? 1 : 0);
+                  setScannedBy(response.data.name || "");
+                  setStatus(response.status);
+                  setMessage(response.message);
+                }
                 setStatus(response.status);
                 setMessage(response.message);
               } catch (e) {
@@ -107,7 +130,10 @@ const AdminQrScanner = () => {
                   return;
                 }
                 
-                setCandidate(null);
+                setFamilyMembers([]);
+                setTotalMembers(0);
+                setNewlyScanned(0);
+                setScannedBy("");
                 setStatus("");
                 setMessage("");
                 setError(
@@ -181,7 +207,7 @@ const AdminQrScanner = () => {
            {/* <span>QR Code: <span style={{ fontWeight: 800, fontFamily: "monospace", letterSpacing: "0.5px" }}>{result}</span></span> */}
           </div>
         )}
-        {candidate && (
+        {familyMembers.length > 0 && (
           <div style={{
             marginBottom: "18px",
             width: "100%",
@@ -192,11 +218,59 @@ const AdminQrScanner = () => {
             fontSize: "1.08em",
             color: "#2d3748"
           }}>
-            <div style={{marginBottom: 6}}><b>Name:</b> {candidate.name}</div>
-            {/* Uncomment for more details if available:
-            {candidate.email && <div style={{marginBottom: 6}}><b>Email:</b> {candidate.email}</div>}
-            {candidate.gender && <div style={{marginBottom: 6}}><b>Gender:</b> {candidate.gender}</div>}
-            {candidate.college && <div><b>College:</b> {candidate.college}</div>} */}
+            <div style={{marginBottom: 12, fontWeight: "bold", color: "#20603d"}}>
+              {totalMembers === 1 ? "Registration Details:" : `Family Registration (${totalMembers} members):`}
+            </div>
+            {scannedBy && (
+              <div style={{marginBottom: 8, fontSize: "0.9em", color: "#666"}}>
+                QR Code scanned by: <strong>{scannedBy}</strong>
+              </div>
+            )}
+            {familyMembers.map((member, index) => (
+              <div key={member.id || index} style={{
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "12px",
+                marginBottom: index < familyMembers.length - 1 ? "10px" : "0",
+                backgroundColor: member.wasAlreadyScanned ? "#fff3cd" : "#d4edda"
+              }}>
+                <div style={{marginBottom: 4}}>
+                  <strong>Name:</strong> {member.name}
+                  {member.wasAlreadyScanned && (
+                    <span style={{
+                      marginLeft: "8px",
+                      backgroundColor: "#ffc107",
+                      color: "#856404",
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                      fontSize: "0.75em",
+                      fontWeight: "bold"
+                    }}>
+                      ALREADY SCANNED
+                    </span>
+                  )}
+                  {!member.wasAlreadyScanned && (
+                    <span style={{
+                      marginLeft: "8px",
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                      fontSize: "0.75em",
+                      fontWeight: "bold"
+                    }}>
+                      NEW SCAN
+                    </span>
+                  )}
+                </div>
+                {member.email && <div style={{marginBottom: 4, fontSize: "0.9em"}}><strong>Email:</strong> {member.email}</div>}
+                {member.gender && <div style={{marginBottom: 4, fontSize: "0.9em"}}><strong>Gender:</strong> {member.gender}</div>}
+                {member.college && <div style={{marginBottom: 4, fontSize: "0.9em"}}><strong>College/Company:</strong> {member.college}</div>}
+                {member.course && member.year && (
+                  <div style={{fontSize: "0.9em"}}><strong>Course:</strong> {member.course} - {member.year}{member.year === '1' ? 'st' : member.year === '2' ? 'nd' : member.year === '3' ? 'rd' : 'th'} Year</div>
+                )}
+              </div>
+            ))}
           </div>
         )}
         {message && (
