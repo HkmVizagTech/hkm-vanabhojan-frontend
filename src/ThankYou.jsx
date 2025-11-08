@@ -84,9 +84,35 @@ export default function ThankYouPage() {
     }
   };
 
+  // Immediate payment verification for urgent cases
+  const triggerImmediateVerification = async (orderId, paymentId) => {
+    try {
+      console.log(`🚀 Triggering immediate payment verification for orderId: ${orderId}, paymentId: ${paymentId}`);
+      const response = await axios.post('https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/verify-payment-immediately', {
+        orderId: orderId,
+        paymentId: paymentId
+      });
+      
+      console.log("🔍 Immediate verification response:", response.data);
+      
+      if (response.data.success) {
+        console.log("✅ Immediate verification successful! Payment updated.");
+        // Refresh the candidate data
+        await checkPaymentStatus(false);
+        return true;
+      } else {
+        console.log("⚠️ Immediate verification did not find payment yet");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ Immediate verification failed:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     let attempts = 0;
-    const maxAttempts = 10; 
+    const maxAttempts = 12; // Increased from 10 to 12
     let pollInterval;
 
     const verifyPaymentWithPolling = async () => {
@@ -97,22 +123,41 @@ export default function ThankYouPage() {
         return;
       }
       
+      // On 3rd attempt (after 6 seconds), try immediate verification
+      if (result === 'pending' && attempts === 2 && candidate?.orderId) {
+        console.log("🚀 Payment still pending after 6s, trying immediate verification...");
+        const immediateResult = await triggerImmediateVerification(candidate.orderId, candidate.paymentId);
+        if (immediateResult) {
+          console.log("✅ Immediate verification found the payment!");
+          if (pollInterval) clearInterval(pollInterval);
+          return;
+        }
+      }
+      
+      // On 6th attempt (after 15 seconds), try immediate verification again
+      if (result === 'pending' && attempts === 5 && candidate?.orderId) {
+        console.log("🚀 Payment still pending after 15s, trying immediate verification again...");
+        const immediateResult = await triggerImmediateVerification(candidate.orderId, candidate.paymentId);
+        if (immediateResult) {
+          console.log("✅ Second immediate verification found the payment!");
+          if (pollInterval) clearInterval(pollInterval);
+          return;
+        }
+      }
+      
       attempts++;
       if (attempts >= maxAttempts) {
         if (pollInterval) clearInterval(pollInterval);
+        console.log("⏰ Maximum verification attempts reached");
         return;
       }
     };
 
     if (id) {
-    
       verifyPaymentWithPolling();
-      
-      
       pollInterval = setInterval(verifyPaymentWithPolling, 3000);
     }
 
-  
     return () => {
       if (pollInterval) clearInterval(pollInterval);
     };
@@ -166,9 +211,11 @@ export default function ThankYouPage() {
           <Text fontSize="sm" color="gray.500">
             Please wait... We're automatically checking your payment status.
           </Text>
-          <Button colorScheme="teal" variant="ghost" onClick={() => navigate('/')}>
-            Register Another Person
-          </Button>
+          <VStack spacing={3}>
+            <Button colorScheme="teal" variant="ghost" onClick={() => navigate('/')}>
+              Register Another Person
+            </Button>
+          </VStack>
           <Text fontSize="xs" color="gray.400">
             Need help? Contact support with your payment ID above.
           </Text>
