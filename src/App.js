@@ -1,12 +1,6 @@
 import React from 'react';
 import {
   ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
   theme,
 } from '@chakra-ui/react';
 
@@ -22,8 +16,6 @@ import AdminAttendanceScannedList from './AdminAttendanceScannedList';
 import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './component/ProtectedRoute';
-import FestivalNotice from './component/FestivalNotice';
-import SendCertificate from './component/sendCertificate';
 function App() {
   return (
     <ChakraProvider theme={theme}>

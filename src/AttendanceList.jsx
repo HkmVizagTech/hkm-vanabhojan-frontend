@@ -14,13 +14,11 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Tag,
   Tooltip,
   Text,
   HStack,
   Badge,
   Select,
-  chakra,
 } from '@chakra-ui/react';
 import {
   CheckCircleIcon,

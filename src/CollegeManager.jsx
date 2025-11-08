@@ -82,7 +82,7 @@ const CollegeManager = () => {
 
   useEffect(() => {
     fetchColleges();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cardBg = useColorModeValue("white", "gray.800");
   const cardBorder = useColorModeValue("gray.200", "gray.600");
