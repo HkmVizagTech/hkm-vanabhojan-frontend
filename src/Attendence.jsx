@@ -18,7 +18,6 @@ import {
   VStack,
   HStack,
   Badge,
-  Divider,
 } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons"; 
 import { QRCodeSVG } from "qrcode.react";

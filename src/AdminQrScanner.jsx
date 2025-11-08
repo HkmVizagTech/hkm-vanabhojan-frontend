@@ -28,7 +28,6 @@ const AdminQrScanner = () => {
   const [error, setError] = useState("");
   const [familyMembers, setFamilyMembers] = useState([]);
   const [totalMembers, setTotalMembers] = useState(0);
-  const [newlyScanned, setNewlyScanned] = useState(0);
   const [scannedBy, setScannedBy] = useState("");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
@@ -61,7 +60,6 @@ const AdminQrScanner = () => {
               setMessage("");
               setFamilyMembers([]);
               setTotalMembers(0);
-              setNewlyScanned(0);
               setScannedBy("");
 
              
@@ -104,7 +102,6 @@ const AdminQrScanner = () => {
                   // New format: multiple family members
                   setFamilyMembers(response.familyMembers);
                   setTotalMembers(response.totalMembers || response.familyMembers.length);
-                  setNewlyScanned(response.newlyScanned || 0);
                   setScannedBy(response.scannedPerson || "");
                   setStatus(response.status);
                   setMessage(response.message);
@@ -112,7 +109,6 @@ const AdminQrScanner = () => {
                   // Single candidate format (backward compatibility)
                   setFamilyMembers([response.data]);
                   setTotalMembers(1);
-                  setNewlyScanned(response.status === "success" ? 1 : 0);
                   setScannedBy(response.data.name || "");
                   setStatus(response.status);
                   setMessage(response.message);
@@ -132,7 +128,6 @@ const AdminQrScanner = () => {
                 
                 setFamilyMembers([]);
                 setTotalMembers(0);
-                setNewlyScanned(0);
                 setScannedBy("");
                 setStatus("");
                 setMessage("");
