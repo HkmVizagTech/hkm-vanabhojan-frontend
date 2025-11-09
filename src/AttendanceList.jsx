@@ -46,7 +46,7 @@ const AttendanceList = () => {
       
       try {
         // Use getAllCandidates endpoint to get ALL registrations (attended + not attended)
-        const response = await fetch('http://localhost:3300/users/', {
+        const response = await fetch('https://hkm-vanabhojan-backend-882278565284.europe-west1.run.app/users/', {
           method: 'GET',
           headers: {
             "Authorization": `Bearer ${token}`,
