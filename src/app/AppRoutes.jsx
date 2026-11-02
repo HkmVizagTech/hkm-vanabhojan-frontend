@@ -6,19 +6,19 @@ import AdminLayout from '../components/layout/AdminLayout';
 import RequireCashAccess from '../components/common/RequireCashAccess';
 
 // Every page is its own chunk: visitors to the registration page never download admin code (or xlsx, zxing...).
-const RegistrationPage = lazy(() => import('../features/landing/RegistrationPage'));
-const ThankYouPage = lazy(() => import('../features/thankyou/ThankYouPage'));
-const QrLookupPage = lazy(() => import('../features/attendance/QrLookupPage'));
-const LoginPage = lazy(() => import('../features/auth/LoginPage'));
-const CashDeskPage = lazy(() => import('../features/admin/cash/CashDeskPage'));
-const StaffPage = lazy(() => import('../features/admin/staff/StaffPage'));
-const CandidatesPage = lazy(() => import('../features/admin/candidates/CandidatesPage'));
-const AttendancePage = lazy(() => import('../features/admin/attendance/AttendancePage'));
-const ScannedListPage = lazy(() => import('../features/admin/scanned/ScannedListPage'));
-const CollegesPage = lazy(() => import('../features/admin/colleges/CollegesPage'));
-const ScannerPage = lazy(() => import('../features/admin/scanner/ScannerPage'));
-const EventsPage = lazy(() => import('../features/admin/events/EventsPage'));
-const InsightsPage = lazy(() => import('../features/admin/insights/InsightsPage'));
+const RegistrationPage = lazy(() => import(/* webpackChunkName: "page-registration" */ '../features/landing/RegistrationPage'));
+const ThankYouPage = lazy(() => import(/* webpackChunkName: "page-thank-you" */ '../features/thankyou/ThankYouPage'));
+const QrLookupPage = lazy(() => import(/* webpackChunkName: "page-qr-lookup" */ '../features/attendance/QrLookupPage'));
+const LoginPage = lazy(() => import(/* webpackChunkName: "page-login" */ '../features/auth/LoginPage'));
+const CashDeskPage = lazy(() => import(/* webpackChunkName: "page-cash-desk" */ '../features/admin/cash/CashDeskPage'));
+const StaffPage = lazy(() => import(/* webpackChunkName: "page-staff" */ '../features/admin/staff/StaffPage'));
+const CandidatesPage = lazy(() => import(/* webpackChunkName: "page-candidates" */ '../features/admin/candidates/CandidatesPage'));
+const AttendancePage = lazy(() => import(/* webpackChunkName: "page-attendance" */ '../features/admin/attendance/AttendancePage'));
+const ScannedListPage = lazy(() => import(/* webpackChunkName: "page-scanned-list" */ '../features/admin/scanned/ScannedListPage'));
+const CollegesPage = lazy(() => import(/* webpackChunkName: "page-colleges" */ '../features/admin/colleges/CollegesPage'));
+const ScannerPage = lazy(() => import(/* webpackChunkName: "page-scanner" */ '../features/admin/scanner/ScannerPage'));
+const EventsPage = lazy(() => import(/* webpackChunkName: "page-events" */ '../features/admin/events/EventsPage'));
+const InsightsPage = lazy(() => import(/* webpackChunkName: "page-insights" */ '../features/admin/insights/InsightsPage'));
 
 const STAFF = ['admin', 'user'];
 const ADMIN_ONLY = ['admin'];
