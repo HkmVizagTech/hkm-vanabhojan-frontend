@@ -1,8 +1,8 @@
 // Things that stay the same every year. The date, venue, fees and age range of each edition
 // are created in the admin console (Events) and loaded from the backend.
 export const EVENT = {
-  name: 'Kartik Vanabhojanam',
-  title: 'Kartik Vanabhojanam',
+  name: 'Kartika Vanabhojanam',
+  title: 'Kartika Vanabhojanam',
   tagline: 'A Day With Nature & Divine',
   organiser: 'Hare Krishna Vaikuntham Cultural Centre',
   contact: {
