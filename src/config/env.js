@@ -6,6 +6,6 @@ export const API_URL =
 
 // Razorpay key ids are public by design (the secret stays on the server).
 export const RAZORPAY_KEY =
-  process.env.REACT_APP_RAZORPAY_KEY || 'rzp_live_HBAc3tlMK0X5Xd';
+  process.env.REACT_APP_RAZORPAY_KEY || 'rzp_live_SJXMnvdq896pe1';
 
 export const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';

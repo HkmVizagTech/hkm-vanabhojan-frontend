@@ -32,7 +32,7 @@ export function usePayment() {
         if (!order?.id) throw new Error('Order creation failed');
 
         const checkout = new Razorpay({
-          key: RAZORPAY_KEY,
+          key: order.keyId || RAZORPAY_KEY,
           amount: order.amount,
           currency: 'INR',
           name: event?.title || 'Vanabhojanam',
