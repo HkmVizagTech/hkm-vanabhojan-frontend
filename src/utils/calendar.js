@@ -13,7 +13,7 @@ export const buildEventIcs = event =>
   [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Karthik Vanabhojanam//EN',
+    'PRODID:-//Kartik Vanabhojanam//EN',
     'BEGIN:VEVENT',
     `UID:vanabhojanam-${event.dateISO}@harekrishnavizag.org`,
     `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,

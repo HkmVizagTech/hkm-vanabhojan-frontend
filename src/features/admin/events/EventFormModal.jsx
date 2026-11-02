@@ -9,7 +9,7 @@ import { toDateInput } from '../../../utils/event';
 import FormField from '../../../components/common/FormField';
 
 const blank = () => ({
-  name: `Karthik Vanabhojanam ${new Date().getFullYear()}`,
+  name: `Kartik Vanabhojanam ${new Date().getFullYear()}`,
   date: '',
   venueName: '',
   venueAddress: '',

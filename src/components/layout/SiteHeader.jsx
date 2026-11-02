@@ -54,10 +54,10 @@ export default function SiteHeader({ onRegister }) {
       }}
     >
       <Container maxW="6xl" h={{ base: '60px', md: '68px' }} display="flex" alignItems="center" justifyContent="space-between" gap={4}>
-        <HStack as="a" href="/" spacing={3} aria-label="Karthik Vanabhojanam home">
+        <HStack as="a" href="/" spacing={3} aria-label="Kartik Vanabhojanam home">
           <Image src={logo} alt="" boxSize={{ base: '36px', md: '42px' }} borderRadius="full" />
           <Text fontFamily="heading" fontWeight="bold" fontSize={{ base: 'lg', md: '2xl' }} color="white" lineHeight="1.05">
-            Karthik Vanabhojanam
+            Kartik Vanabhojanam
           </Text>
         </HStack>
 
