@@ -5,8 +5,8 @@ export default function PageHeader({ title, subtitle, children }) {
   return (
     <Flex justify="space-between" align="center" mb={5} wrap="wrap" gap={3}>
       <div>
-        <Heading size="lg" color="text.heading">{title}</Heading>
-        {subtitle && <Text color="text.muted" fontSize="sm">{subtitle}</Text>}
+        <Heading as="h1" size="xl" color="text.heading" lineHeight="1.1">{title}</Heading>
+        {subtitle && <Text color="text.muted" fontSize="sm" mt={1}>{subtitle}</Text>}
       </div>
       <Flex gap={2} wrap="wrap">{children}</Flex>
     </Flex>

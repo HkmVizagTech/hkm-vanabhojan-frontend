@@ -42,7 +42,7 @@ export default function Ball() {
           <group rotation={[0.3, 0, 0.25]}>
             {WEDGES.map((color, i) => (
               <mesh key={i}>
-                <sphereGeometry args={[0.78, 16, 12, i * PHI, PHI]} />
+                <sphereGeometry args={[0.78, 32, 20, i * PHI, PHI]} />
                 <Mat color={color} flat={false} side={2} />
               </mesh>
             ))}

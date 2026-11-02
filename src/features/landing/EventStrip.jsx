@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Container, HStack, Icon, Link, SimpleGrid, Stack, Text, VStack } from '@chakra-ui/react';
-import { CalendarDays, CalendarPlus, MapPin, Navigation, Ticket, Users } from 'lucide-react';
+import { CalendarDays, CalendarPlus, MapPin, Navigation, Ticket } from 'lucide-react';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { downloadEventIcs } from '../../utils/calendar';
 import { formatINR } from '../../utils/format';
@@ -28,8 +28,8 @@ export default function EventStrip() {
   return (
     <Container maxW="5xl" mt={{ base: 0, md: -8 }} position="relative" zIndex={2}>
       <Reveal>
-        <Box bg="bg.card" borderRadius="2xl" borderWidth="1px" borderColor="border.soft" boxShadow="0 18px 50px -24px rgba(32,96,61,0.5)">
-          <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }}>
+        <Box bg="bg.card" borderRadius="2xl" borderWidth="1px" borderColor="border.soft" boxShadow="soft">
+          <SimpleGrid columns={{ base: 1, sm: 3 }}>
             <Tile icon={CalendarDays} label="Date">
               <Text fontWeight="bold">{event.dateLabel}</Text>
             </Tile>
@@ -41,11 +41,9 @@ export default function EventStrip() {
               <Text fontWeight="bold">
                 <Text as="span" color="brand.600" _dark={{ color: 'brand.200' }}>{formatINR(event.fees.College.amount)}</Text> students
               </Text>
-              <Text fontSize="sm" color="text.muted">{formatINR(event.fees.Working.amount)} others</Text>
-            </Tile>
-            <Tile icon={Users} label="Age">
-              <Text fontWeight="bold">{event.ageLimit.label}</Text>
-              <Text fontSize="sm" color="text.muted">only</Text>
+              <Text fontWeight="bold">
+                <Text as="span" color="brand.600" _dark={{ color: 'brand.200' }}>{formatINR(event.fees.Working.amount)}</Text> others
+              </Text>
             </Tile>
           </SimpleGrid>
           <Stack direction={{ base: 'column', sm: 'row' }} spacing={3} px={4} pb={4} justify="center">

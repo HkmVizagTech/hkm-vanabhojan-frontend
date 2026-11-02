@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Flex,
   FormHelperText,
   Heading,
@@ -29,7 +28,8 @@ import { COLLEGE_YEARS, HOW_DID_YOU_KNOW } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { registrationApi } from '../../services/registration';
 import { preloadRazorpay } from '../../hooks/useRazorpay';
-import { ageOn, formatINR } from '../../utils/format';
+import Figure from '../../components/three/Figure';
+import { formatINR } from '../../utils/format';
 import FormField from '../../components/common/FormField';
 import { buildPayload, feeFor } from './validation';
 import { useRegistrationForm } from './useRegistrationForm';
@@ -67,9 +67,11 @@ function FeeBanner({ event, category }) {
       px={4}
       py={3}
       borderRadius="xl"
-      bg={category === 'Working' ? 'lotus.50' : 'brand.50'}
-      color={category === 'Working' ? 'lotus.600' : 'brand.700'}
-      _dark={{ bg: 'whiteAlpha.100', color: 'white' }}
+      borderWidth="1px"
+      borderColor="saffron.200"
+      bg="saffron.50"
+      color="brand.800"
+      _dark={{ bg: 'whiteAlpha.100', color: 'white', borderColor: 'whiteAlpha.200' }}
       aria-live="polite"
     >
       <Box>
@@ -106,8 +108,6 @@ export default function RegistrationForm() {
 
   const isCollege = values.collegeOrWorking === 'College';
   const isWorking = values.collegeOrWorking === 'Working';
-  const age = ageOn(values.dob);
-  const outsideAge = age !== null && (age < event.ageLimit.min || age > event.ageLimit.max);
   const today = new Date().toISOString().split('T')[0];
 
   const text = name => ({
@@ -128,16 +128,37 @@ export default function RegistrationForm() {
       : 'Register Now';
 
   return (
-    <Card id="register" boxShadow="0 18px 50px -20px rgba(32,96,61,0.45)" scrollMarginTop="24px">
-      <CardHeader textAlign="center" pb={2}>
-        <Heading size="xl" color="text.heading">
-          {event.name} Registration
-        </Heading>
-        <Text color="text.muted" mt={1} fontSize="sm">
+    <Card id="register" boxShadow="lift" scrollMarginTop="24px" overflow="hidden">
+      <Flex
+        align="center"
+        justify="space-between"
+        gap={2}
+        pl={{ base: 5, md: 8 }}
+        pr={{ base: 1, md: 4 }}
+        py={{ base: 3, md: 4 }}
+        color="white"
+        bg="#0a1511"
+        bgImage="radial-gradient(ellipse 60% 120% at 88% 50%, rgba(201,162,74,0.28), transparent 70%)"
+        borderBottomWidth="2px"
+        borderColor="saffron.400"
+      >
+        <Box>
+          <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest" color="saffron.300">
+            Your entry pass
+          </Text>
+          <Heading as="h3" size="lg" mt={1} color="white" lineHeight="1.1">
+            {event.name} Registration
+          </Heading>
+          <Text mt={2} fontSize="sm" color="whiteAlpha.800" maxW="260px">
+            Pay once and your QR pass arrives on WhatsApp.
+          </Text>
+        </Box>
+        <Figure name="pass" label="3D illustration of a QR entry pass" h={{ base: '130px', md: '170px' }} w={{ base: '120px', md: '160px' }} flexShrink={0} />
+      </Flex>
+      <CardBody pt={5}>
+        <Text color="text.muted" fontSize="xs" mb={4}>
           <Text as="span" color="red.500">*</Text> indicates required
         </Text>
-      </CardHeader>
-      <CardBody>
         <form onSubmit={submit} noValidate>
           <Stack spacing={5}>
             <FeeBanner event={event} category={values.collegeOrWorking} />
@@ -151,7 +172,6 @@ export default function RegistrationForm() {
               label="Date of Birth"
               required
               error={errors.dob}
-              hint={outsideAge ? `Heads up: this festival is for ages ${event.ageLimit.label}.` : undefined}
             >
               <Input type="date" max={today} {...text('dob')} />
             </FormField>

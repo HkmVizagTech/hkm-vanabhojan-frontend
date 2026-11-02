@@ -1,32 +1,22 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import natureBg from '../../assets/vanabhojanam-nature.jpg';
 
-/** Shared backdrop for every public page: soft nature photo under a cream wash. */
+/** Shared backdrop for public pages: plain ivory with one very faint warm light at the top. */
 export default function PublicShell({ children, ...boxProps }) {
   return (
-    <Box
-      minH="100vh"
-      position="relative"
-      overflowX="hidden"
-      bgColor="bg.page"
-      {...boxProps}
-    >
+    <Box minH="100vh" position="relative" overflowX="clip" bg="bg.page" {...boxProps}>
       <Box
         aria-hidden="true"
-        position="fixed"
-        inset={0}
-        zIndex={0}
-        bgImage={`linear-gradient(180deg, rgba(246,243,232,0.95) 0%, rgba(233,248,239,0.93) 100%), url(${natureBg})`}
-        bgSize="cover"
-        bgPosition="center"
-        _dark={{
-          bgImage: `linear-gradient(180deg, rgba(14,26,19,0.94) 0%, rgba(14,26,19,0.9) 100%), url(${natureBg})`,
-        }}
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        h="720px"
+        pointerEvents="none"
+        bgImage="radial-gradient(ellipse 70% 60% at 78% 20%, rgba(201,162,74,0.12), transparent 70%)"
+        _dark={{ bgImage: 'none' }}
       />
-      <Box position="relative" zIndex={1}>
-        {children}
-      </Box>
+      <Box position="relative">{children}</Box>
     </Box>
   );
 }

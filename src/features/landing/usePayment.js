@@ -35,7 +35,7 @@ export function usePayment() {
           key: RAZORPAY_KEY,
           amount: order.amount,
           currency: 'INR',
-          name: event?.title || 'Vanabhojanam Youth Festival',
+          name: event?.title || 'Vanabhojanam',
           description: 'Registration Fee',
           order_id: order.id,
           prefill: { name: payload.name, email: payload.email, contact: `91${payload.whatsappNumber}` },

@@ -45,7 +45,7 @@ export default function Mridanga() {
     <group ref={root}>
       <group rotation={[0.35, 0, Math.PI / 2.4]}>
         <mesh>
-          <latheGeometry args={[points, 28]} />
+          <latheGeometry args={[points, 72]} />
           <Mat color={C.clay} flat={false} rough={0.6} />
         </mesh>
         {/* drum heads */}
@@ -67,11 +67,11 @@ export default function Mridanga() {
         </mesh>
         {/* cloth bands */}
         <mesh position={[0, -0.45, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.47, 0.045, 8, 28]} />
+          <torusGeometry args={[0.47, 0.045, 20, 64]} />
           <Mat color={C.lotusDeep} flat={false} />
         </mesh>
         <mesh position={[0, 0.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.47, 0.045, 8, 28]} />
+          <torusGeometry args={[0.47, 0.045, 20, 64]} />
           <Mat color={C.gold} flat={false} />
         </mesh>
       </group>

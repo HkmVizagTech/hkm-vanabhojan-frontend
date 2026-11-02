@@ -2,7 +2,7 @@
 // are created in the admin console (Events) and loaded from the backend.
 export const EVENT = {
   name: 'Vanabhojanam',
-  title: 'Vanabhojanam Youth Festival',
+  title: 'Vanabhojanam',
   tagline: 'A Day With Nature & Divine',
   organiser: 'Hare Krishna Vaikuntham Cultural Centre',
   contact: {

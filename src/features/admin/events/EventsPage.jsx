@@ -150,8 +150,6 @@ export default function EventsPage() {
                       date: e.date,
                       venue: e.venue,
                       fees: e.fees,
-                      ageMin: e.ageMin,
-                      ageMax: e.ageMax,
                       registrationOpen: !e.registrationOpen,
                     }),
                   e.registrationOpen ? 'Registration closed' : 'Registration opened'

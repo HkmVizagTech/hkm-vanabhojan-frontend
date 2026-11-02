@@ -35,7 +35,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside">
       <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(8px)" />
       <ModalContent maxH="90vh" borderRadius="2xl" overflow="hidden">
-        <ModalHeader bgGradient="linear(to-r, brand.600, brand.400)" color="white">
+        <ModalHeader bg="brand.700" color="white">
           <HStack spacing={3}>
             <Avatar name={c.name} size="md" bg="white" color="brand.600" />
             <VStack align="start" spacing={0}>

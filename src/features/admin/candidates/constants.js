@@ -13,7 +13,7 @@ export const ACTION_COPY = {
     colorScheme: 'red',
     done: 'Candidate rejected and WhatsApp notification sent!',
     target: "this candidate's registration",
-    note: 'A WhatsApp rejection message will be sent to the candidate.',
+    note: 'A WhatsApp rejection message will be sent, and an online payment is refunded automatically. This cannot be undone.',
   },
   refund: {
     colorScheme: 'orange',

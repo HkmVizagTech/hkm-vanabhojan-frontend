@@ -16,8 +16,6 @@ const blank = () => ({
   mapsUrl: '',
   feeCollege: '',
   feeWorking: '',
-  ageMin: 16,
-  ageMax: 31,
   registrationOpen: true,
 });
 
@@ -29,8 +27,6 @@ const fromEvent = e => ({
   mapsUrl: e.venue?.mapsUrl || '',
   feeCollege: e.fees.college,
   feeWorking: e.fees.working,
-  ageMin: e.ageMin,
-  ageMax: e.ageMax,
   registrationOpen: e.registrationOpen,
 });
 
@@ -39,8 +35,6 @@ const toPayload = f => ({
   date: f.date,
   venue: { name: f.venueName, address: f.venueAddress, mapsUrl: f.mapsUrl },
   fees: { college: Number(f.feeCollege), working: Number(f.feeWorking) },
-  ageMin: Number(f.ageMin),
-  ageMax: Number(f.ageMax),
   registrationOpen: f.registrationOpen,
 });
 
@@ -114,15 +108,6 @@ export default function EventFormModal({ isOpen, onClose, event, previous, onSav
             <FormField id="ev-maps" label="Google Maps link" hint="Optional. If empty, a map search for the venue is used.">
               <Input placeholder="https://maps.app.goo.gl/..." {...bind('mapsUrl')} />
             </FormField>
-
-            <SimpleGrid columns={2} spacing={4}>
-              <FormField id="ev-age-min" label="Minimum age">
-                <Input type="number" min="0" {...bind('ageMin')} />
-              </FormField>
-              <FormField id="ev-age-max" label="Maximum age">
-                <Input type="number" min="0" {...bind('ageMax')} />
-              </FormField>
-            </SimpleGrid>
 
             <FormControl display="flex" alignItems="center" justifyContent="space-between" p={3} borderWidth="1px" borderRadius="xl">
               <FormLabel htmlFor="ev-open" mb={0}>

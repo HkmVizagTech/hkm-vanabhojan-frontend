@@ -20,7 +20,15 @@ export function useCandidateActions({ onUpdated }) {
     try {
       const result = await candidatesApi.act(action, candidateId);
       onUpdated(candidateId, result.data);
-      toast({ title: ACTION_COPY[action].done, status: 'success', duration: 3000, isClosable: true });
+      // The server explains a partial outcome (for example a rejection whose refund failed): show that instead of plain success.
+      const partial = result.refund === 'failed';
+      toast({
+        title: partial ? 'Rejected, but the refund failed' : ACTION_COPY[action].done,
+        description: partial ? result.message : undefined,
+        status: partial ? 'warning' : 'success',
+        duration: partial ? 8000 : 3000,
+        isClosable: true,
+      });
     } catch (error) {
       toast({
         title: `Failed to ${action} candidate`,

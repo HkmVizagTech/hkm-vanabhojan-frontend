@@ -1,15 +1,65 @@
 import React, { useRef } from 'react';
-import { Box, Button, Container, Flex, HStack, Heading, Image, Text, VStack, usePrefersReducedMotion } from '@chakra-ui/react';
-import { ArrowDown, CalendarDays, MapPin } from 'lucide-react';
+import { Box, Button, Container, Flex, Heading, HStack, Image, Text, VStack, usePrefersReducedMotion } from '@chakra-ui/react';
+import { ArrowDown, CalendarDays, MapPin, QrCode, Sparkles } from 'lucide-react';
+import { Link as RouterLink } from 'react-router-dom';
 import { EVENT } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { gsap, useGSAP } from '../../lib/gsap';
 import { useCountdown } from '../../hooks/useCountdown';
-import Figure from '../../components/three/Figure';
-import Petals from '../../components/common/Petals';
-import logo from '../../assets/newLogo.png';
+import { formatINR } from '../../utils/format';
+import logo from '../../assets/logo.svg';
 
-const TITLE_WORDS = ['VANABHOJANAM'];
+// Deterministic pseudo-random so the skyline is identical on every render.
+const rng = seed => () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+
+function treeLine(seed, count, minH, maxH) {
+  const rand = rng(seed);
+  const step = 1440 / count;
+  let d = '';
+  for (let i = 0; i <= count; i++) {
+    const x = i * step + (rand() - 0.5) * step * 0.6;
+    const h = minH + rand() * (maxH - minH);
+    const w = step * (0.45 + rand() * 0.35);
+    d += `M${(x - w).toFixed(1)},300 C${(x - w).toFixed(1)},${(300 - h * 0.55).toFixed(1)} ${(x - w * 0.3).toFixed(1)},${(300 - h * 0.85).toFixed(1)} ${x.toFixed(1)},${(300 - h).toFixed(1)} C${(x + w * 0.3).toFixed(1)},${(300 - h * 0.85).toFixed(1)} ${(x + w).toFixed(1)},${(300 - h * 0.55).toFixed(1)} ${(x + w).toFixed(1)},300 Z `;
+  }
+  return d;
+}
+const FOREST_BACK = treeLine(11, 17, 110, 220);
+const FOREST_FRONT = treeLine(29, 11, 60, 140);
+const FIREFLIES = Array.from({ length: 16 }, (_, i) => {
+  const r = rng(100 + i);
+  return { left: `${6 + r() * 88}%`, top: `${18 + r() * 52}%`, delay: `${(r() * 5).toFixed(1)}s`, size: 2 + Math.round(r() * 2) };
+});
+
+/** A quiet forest skyline with a few fireflies: the "vana" in Vanabhojanam, kept minimal. */
+function HeroBackdrop() {
+  return (
+    <>
+      <Box aria-hidden="true" position="absolute" left={0} right={0} bottom={0} h={{ base: '150px', md: '240px' }} pointerEvents="none">
+        <svg viewBox="0 0 1440 300" preserveAspectRatio="none" width="100%" height="100%">
+          <path d={FOREST_BACK} fill="#10281d" />
+          <path d={FOREST_FRONT} fill="#0b1c15" />
+          <rect x="0" y="296" width="1440" height="4" fill="#0b1c15" />
+        </svg>
+      </Box>
+      <Box aria-hidden="true" position="absolute" inset={0} pointerEvents="none" overflow="hidden">
+        {FIREFLIES.map((f, i) => (
+          <Box
+            key={i}
+            position="absolute"
+            left={f.left}
+            top={f.top}
+            boxSize={`${f.size}px`}
+            borderRadius="full"
+            bg="#f1d58a"
+            boxShadow="0 0 8px 2px rgba(241,213,138,0.55)"
+            animation={`firefly 4.5s ease-in-out ${f.delay} infinite`}
+          />
+        ))}
+      </Box>
+    </>
+  );
+}
 
 function Countdown({ dateISO }) {
   const left = useCountdown(`${dateISO}T00:00:00+05:30`);
@@ -21,22 +71,22 @@ function Countdown({ dateISO }) {
     ['Secs', left.seconds],
   ];
   return (
-    <HStack spacing={2} className="hero-pill" role="timer" aria-label="Time until the festival">
+    <HStack className="hero-pill" spacing={2} role="timer" aria-label="Time until the festival">
       {cells.map(([label, n]) => (
         <VStack
           key={label}
           spacing={0}
-          minW="58px"
-          py={2}
+          minW={{ base: '60px', md: '68px' }}
+          py={2.5}
           borderRadius="lg"
-          bg="whiteAlpha.800"
-          _dark={{ bg: 'whiteAlpha.200' }}
-          boxShadow="sm"
+          bg="whiteAlpha.100"
+          borderWidth="1px"
+          borderColor="whiteAlpha.200"
         >
-          <Text fontFamily="heading" fontWeight="bold" fontSize="2xl" lineHeight="1" color="brand.700" _dark={{ color: 'brand.100' }}>
+          <Text fontWeight="semibold" fontSize={{ base: '2xl', md: '3xl' }} lineHeight="1" color="white" sx={{ fontVariantNumeric: 'tabular-nums' }}>
             {String(n).padStart(2, '0')}
           </Text>
-          <Text fontSize="10px" textTransform="uppercase" letterSpacing="wider" color="text.muted">
+          <Text fontSize="10px" fontWeight="bold" textTransform="uppercase" letterSpacing="widest" color="whiteAlpha.700">
             {label}
           </Text>
         </VStack>
@@ -49,125 +99,129 @@ export default function Hero({ onRegister }) {
   const { event } = useCurrentEvent();
   const root = useRef(null);
   const reduced = usePrefersReducedMotion();
+  const closed = event && !event.registrationOpen;
 
   useGSAP(
     () => {
       if (reduced) return;
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      tl.from('.hero-logo', { scale: 0.4, opacity: 0, rotate: -25, duration: 1, ease: 'back.out(1.8)' })
-        .from('.hero-word', { yPercent: 115, duration: 1, stagger: 0.08 }, '-=0.6')
-        .from('.hero-sub', { y: 20, opacity: 0, duration: 0.7, stagger: 0.12 }, '-=0.5')
-        .from('.hero-pill', { y: 16, opacity: 0, duration: 0.6, stagger: 0.1 }, '-=0.4')
-        .from('.hero-cta', { y: 16, opacity: 0, duration: 0.6 }, '-=0.3');
-      gsap.to('.hero-lotus', {
-        yPercent: -14,
-        scale: 1.1,
-        ease: 'none',
-        scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true },
-      });
-      gsap.to('.hero-glow', { scale: 1.12, opacity: 0.85, duration: 4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      tl.from('.hero-word', { yPercent: 115, duration: 1, stagger: 0.08 })
+        .from('.hero-sub', { y: 20, opacity: 0, duration: 0.7, stagger: 0.1 }, '-=0.6')
+        .from('.hero-pill', { y: 16, opacity: 0, duration: 0.6, stagger: 0.1 }, '-=0.5')
+        .from('.hero-cta', { y: 16, opacity: 0, duration: 0.6 }, '-=0.4');
     },
     { scope: root, dependencies: [reduced] }
   );
 
   return (
-    <Box ref={root} as="section" position="relative" overflow="hidden" pt={{ base: 6, md: 12 }} pb={{ base: 10, md: 20 }}>
-      <Box
-        className="hero-glow"
-        aria-hidden="true"
-        position="absolute"
-        top={{ base: '8%', md: '-10%' }}
-        right={{ base: '-30%', md: '-5%' }}
-        boxSize={{ base: '420px', md: '680px' }}
-        borderRadius="full"
-        bg="radial-gradient(circle, rgba(246,171,46,0.55) 0%, rgba(238,117,155,0.25) 45%, transparent 70%)"
-        opacity={0.65}
-        pointerEvents="none"
-      />
-      <Petals />
+    <Box
+      ref={root}
+      as="section"
+      position="relative"
+      overflow="hidden"
+      color="white"
+      bg="#0a1511"
+      bgImage="radial-gradient(ellipse 55% 60% at 50% 40%, rgba(201,162,74,0.16), transparent 70%), radial-gradient(ellipse 80% 50% at 10% 110%, rgba(31,90,61,0.45), transparent 70%)"
+      pt={{ base: '110px', md: '150px' }}
+      pb={{ base: 28, md: 44 }}
+    >
+      <HeroBackdrop />
       <Container maxW="6xl" position="relative" zIndex={1}>
-        <Flex direction={{ base: 'column-reverse', md: 'row' }} align="center" gap={{ base: 2, md: 8 }}>
-          <VStack flex="1.05" align={{ base: 'center', md: 'flex-start' }} spacing={5} textAlign={{ base: 'center', md: 'left' }}>
-            <HStack spacing={4}>
-              <Image
-                className="hero-logo"
-                src={logo}
-                alt="Hare Krishna Movement logo"
-                boxSize={{ base: '72px', md: '92px' }}
+        <Flex justify="center">
+          <VStack align="center" spacing={{ base: 4, md: 6 }} textAlign="center" maxW="3xl">
+            {event ? (
+              <HStack
+                className="hero-pill"
+                spacing={2}
+                px={4}
+                py={2}
                 borderRadius="full"
-                borderWidth="3px"
-                borderColor="brand.600"
-                bg="white"
-                objectFit="cover"
-                boxShadow="0 8px 24px -8px rgba(32,96,61,0.5)"
-              />
-              <Text className="hero-sub" fontWeight="bold" fontSize="sm" color="lotus.500" textAlign="left" maxW="220px" lineHeight="1.3">
-                Organised by {EVENT.organiser}
-              </Text>
-            </HStack>
+                bg="whiteAlpha.100"
+                borderWidth="1px"
+                borderColor="whiteAlpha.300"
+                fontSize="sm"
+                fontWeight="medium"
+                color="whiteAlpha.900"
+                flexWrap="wrap"
+                justify="center"
+              >
+                <CalendarDays size={16} />
+                <Text>{event.dateLabel}</Text>
+                {event.venue.short && (
+                  <>
+                    <Text opacity={0.4}>·</Text>
+                    <MapPin size={16} />
+                    <Text>{event.venue.short}</Text>
+                  </>
+                )}
+              </HStack>
+            ) : (
+              <HStack className="hero-pill" spacing={2} px={4} py={2} borderRadius="full" bg="whiteAlpha.100" fontSize="sm" fontWeight="medium" color="whiteAlpha.900">
+                <Sparkles size={16} />
+                <Text>Dates for the next Vanabhojanam will be announced soon</Text>
+              </HStack>
+            )}
 
-            <Heading as="h1" aria-label={`${EVENT.name} Youth Festival`} lineHeight="0.95">
-              {TITLE_WORDS.map(w => (
-                <Box key={w} as="span" display="block" overflow="hidden" pb="0.08em">
-                  <Box
-                    as="span"
-                    className="hero-word"
-                    display="inline-block"
-                    fontSize={{ base: '4xl', sm: '6xl', md: '7xl' }}
-                    bgGradient="linear(to-r, brand.700, brand.500 55%, saffron.500)"
-                    bgClip="text"
-                    color="transparent"
-                    _dark={{ bgGradient: 'linear(to-r, brand.100, brand.300 55%, saffron.300)' }}
-                    letterSpacing="0.02em"
-                    pr="0.05em"
-                  >
-                    {w}
-                  </Box>
+            <Heading as="h1" aria-label={`Karthik ${EVENT.name}`} lineHeight="0.95">
+              <Box as="span" display="block" overflow="hidden" pb="0.2em">
+                <Box as="span" className="hero-word" display="inline-block" fontFamily="heading" fontStyle="italic" fontWeight={500} fontSize={{ base: '2xl', md: '4xl' }} letterSpacing="0.28em" color="saffron.300" textTransform="uppercase" mb={{ base: 1, md: 2 }}>
+                  Karthik
                 </Box>
-              ))}
-              <Box as="span" display="block" overflow="hidden">
+              </Box>
+              <Box as="span" display="block" overflow="hidden" pb="0.3em" mb="-0.2em">
                 <Box
                   as="span"
                   className="hero-word"
                   display="inline-block"
-                  fontSize={{ base: '2xl', md: '4xl' }}
-                  color="saffron.600"
-                  fontStyle="italic"
+                  fontSize={{ base: '4xl', sm: '6xl', md: '8xl' }}
+                  color="transparent"
+                  bgImage="linear-gradient(100deg, #ffffff 0%, #ffffff 42%, #f1d58a 50%, #ffffff 58%, #ffffff 100%)"
+                  bgSize="250% 100%"
+                  bgClip="text"
+                  animation="heroSheen 3.2s ease-out 1.1s 1 both"
+                  letterSpacing="0.06em"
+                  pr="0.05em"
+                  pb="0.25em"
+                  mb="-0.25em"
                 >
-                  Youth Festival
+                  VANABHOJANAM
                 </Box>
               </Box>
             </Heading>
 
-            <Text className="hero-sub" fontSize={{ base: 'lg', md: 'xl' }} fontFamily="heading" fontStyle="italic" color="text.muted">
+            <Text className="hero-sub" fontSize={{ base: 'lg', md: 'xl' }} fontFamily="heading" fontStyle="italic" color="whiteAlpha.800">
               {EVENT.tagline}
             </Text>
+            <Box className="hero-sub" aria-hidden="true" h="1px" w="72px" bg="saffron.400" />
+            <Text className="hero-sub" maxW="xl" color="whiteAlpha.800" fontSize={{ base: 'md', md: 'lg' }}>
+              A day away from screens: spiritual talks, games, ecstatic kirtan and a shared prasadam feast.
+            </Text>
 
-            {event ? (
-              <>
-                <HStack className="hero-pill" spacing={4} flexWrap="wrap" justify={{ base: 'center', md: 'flex-start' }} color="brand.700" _dark={{ color: 'brand.100' }} fontWeight="bold" fontSize="sm">
-                  <HStack><CalendarDays size={18} /><Text>{event.dateLabel}</Text></HStack>
-                  {event.venue.short && <HStack><MapPin size={18} /><Text>{event.venue.short}</Text></HStack>}
-                </HStack>
-                <Countdown dateISO={event.dateISO} />
-              </>
-            ) : (
-              <Text className="hero-pill" fontWeight="bold" color="brand.700" _dark={{ color: 'brand.100' }}>
-                Dates for the next Vanabhojanam will be announced soon.
+            {event && <Countdown dateISO={event.dateISO} />}
+
+            <HStack className="hero-cta" spacing={3} flexWrap="wrap" justify="center">
+              <Button variant="brass" size="lg" px={8} h="56px" fontSize="md" rightIcon={<ArrowDown size={18} />} onClick={onRegister}>
+                {closed ? 'Registration closed' : 'Register Now'}
+              </Button>
+              <Button as={RouterLink} to="/attendance" size="lg" h="56px" variant="outline" color="white" borderColor="whiteAlpha.400" leftIcon={<QrCode size={18} />} _hover={{ bg: 'whiteAlpha.200' }}>
+                View my QR
+              </Button>
+            </HStack>
+
+            {event && (
+              <Text className="hero-sub" fontWeight="semibold" color="saffron.200">
+                {formatINR(event.fees.College.amount)} students · {formatINR(event.fees.Working.amount)} others
               </Text>
             )}
 
-            {/* GSAP animates the wrapper: the button's own CSS transition would fight the tween. */}
-            <Box className="hero-cta">
-              <Button variant="festival" size="lg" px={8} rightIcon={<ArrowDown size={18} />} onClick={onRegister}>
-                {event && !event.registrationOpen ? 'Registration closed' : 'Register Now'}
-              </Button>
-            </Box>
+            <HStack className="hero-sub" spacing={3} pt={1}>
+              <Image src={logo} alt="" boxSize="34px" borderRadius="full" />
+              <Text fontSize="sm" color="whiteAlpha.700" textAlign="left">
+                Organised by <Text as="span" fontWeight="semibold" color="white">{EVENT.organiser}</Text>
+              </Text>
+            </HStack>
           </VStack>
 
-          <Box className="hero-lotus" flex="1" w="100%" maxW={{ base: '420px', md: 'none' }}>
-            <Figure name="lotus" label="A blooming lotus on still water" softEdges h={{ base: '280px', md: '520px' }} />
-          </Box>
         </Flex>
       </Container>
     </Box>

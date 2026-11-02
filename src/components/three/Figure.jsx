@@ -12,6 +12,7 @@ const GLYPHS = {
   mridanga: '🥁',
   thali: '🍛',
   picnic: '🌳',
+  pass: '🎫',
 };
 
 const supportsWebGL = () => {

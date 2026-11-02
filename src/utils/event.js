@@ -34,7 +34,6 @@ export function presentEvent(api) {
       short: api.venue?.name || '',
       mapsUrl: mapsLink(api.venue || {}),
     },
-    ageLimit: { min: api.ageMin, max: api.ageMax, label: `${api.ageMin} - ${api.ageMax} years` },
     fees: {
       College: { amount: api.fees.college, label: 'Student Rate', hint: 'College student' },
       Working: { amount: api.fees.working, label: 'Professional Rate', hint: 'Others' },

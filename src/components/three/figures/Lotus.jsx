@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react';
+import { BufferAttribute, Color, DoubleSide, PlaneGeometry } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { gsap, useGSAP } from '../../../lib/gsap';
 import { C } from '../palette';
@@ -6,20 +7,42 @@ import { Mat } from '../Mat';
 import { useFigure } from '../figureContext';
 
 const RINGS = [
-  { n: 8, len: 1.55, width: 0.42, open: 0.22, color: C.lotusPale, offset: 0 },
-  { n: 8, len: 1.3, width: 0.4, open: 0.55, color: C.lotus, offset: Math.PI / 8 },
-  { n: 6, len: 1.0, width: 0.36, open: 0.92, color: C.lotus, offset: 0.2 },
-  { n: 5, len: 0.7, width: 0.3, open: 1.25, color: C.lotusDeep, offset: 0.5 },
+  { n: 9, len: 1.7, width: 0.4, open: 0.16, color: C.lotus, offset: 0 },
+  { n: 9, len: 1.5, width: 0.4, open: 0.5, color: C.lotus, offset: Math.PI / 9 },
+  { n: 7, len: 1.2, width: 0.38, open: 0.9, color: C.lotusDeep, offset: 0.2 },
+  { n: 5, len: 0.8, width: 0.32, open: 1.3, color: C.lotusDeep, offset: 0.5 },
 ];
 const CLOSED = 1.45;
 
-function Petal({ angle, ring, tiltRef }) {
+/** A real petal: pointed, cupped across its width, curling back at the tip, tinted from a deeper base to a pale tip. */
+export function buildPetal(ring) {
+  const geo = new PlaneGeometry(1, 1, 10, 18);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const base = new Color(ring.color).lerp(new Color('#a85f6e'), 0.25);
+  const tip = new Color(ring.color).lerp(new Color('#ffffff'), 0.3);
+  const tmp = new Color();
+  for (let i = 0; i < pos.count; i++) {
+    const u = pos.getY(i) + 0.5; // 0 at the base, 1 at the tip
+    const v = pos.getX(i) * 2; // -1..1 across
+    const half = ring.width * Math.pow(Math.sin(Math.PI * Math.pow(u, 0.72)), 0.85);
+    const x = v * half;
+    const y = 0.22 * ring.width * v * v * (1 - 0.5 * u) - 0.35 * Math.pow(u, 3) * ring.len * 0.35; // cup, then tip curl
+    pos.setXYZ(i, x, y, u * ring.len);
+    tmp.copy(base).lerp(tip, Math.pow(u, 1.3));
+    colors.set([tmp.r, tmp.g, tmp.b], i * 3);
+  }
+  geo.setAttribute('color', new BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function Petal({ angle, geo, tiltRef }) {
   return (
     <group rotation={[0, angle, 0]}>
       <group ref={tiltRef} rotation={[-CLOSED, 0, 0]}>
-        <mesh position={[0, 0, ring.len / 2]} scale={[ring.width, 0.07, ring.len / 2]}>
-          <sphereGeometry args={[1, 6, 4]} />
-          <Mat color={ring.color} />
+        <mesh geometry={geo} castShadow>
+          <meshPhysicalMaterial vertexColors side={DoubleSide} roughness={0.55} sheen={0.8} sheenRoughness={0.5} sheenColor="#ffffff" clearcoat={0.15} />
         </mesh>
       </group>
     </group>
@@ -29,7 +52,7 @@ function Petal({ angle, ring, tiltRef }) {
 function LilyPad({ position, radius, rotation }) {
   return (
     <mesh position={position} rotation={[0, rotation, 0]}>
-      <cylinderGeometry args={[radius, radius, 0.05, 14, 1, false, 0.5, Math.PI * 1.85]} />
+      <cylinderGeometry args={[radius, radius, 0.05, 40, 1, false, 0.5, Math.PI * 1.85]} />
       <Mat color={C.leaf} />
     </mesh>
   );
@@ -41,6 +64,7 @@ export default function Lotus() {
   const tilts = useRef([]); // [ringIndex][petalIndex] -> group
   const ripples = useRef([]);
 
+  const geos = useMemo(() => RINGS.map(buildPetal), []);
   const petals = useMemo(
     () =>
       RINGS.map((ring, r) =>
@@ -84,7 +108,7 @@ export default function Lotus() {
 
   useFrame((state, delta) => {
     if (reducedMotion || !root.current) return;
-    root.current.rotation.y += delta * 0.12;
+    root.current.rotation.y += delta * 0.07;
     root.current.position.y = Math.sin(state.clock.elapsedTime * 0.9) * 0.04;
   });
 
@@ -92,8 +116,12 @@ export default function Lotus() {
     <group rotation={[0.1, 0, 0]} position={[0, -0.25, 0]}>
       {/* water */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.12, 0]}>
+        <circleGeometry args={[3.0, 64]} />
+        <Mat color={C.water} transparent opacity={0.28} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.11, 0]} receiveShadow>
         <circleGeometry args={[3.6, 48]} />
-        <Mat color={C.water} flat={false} transparent opacity={0.35} />
+        <shadowMaterial opacity={0.22} />
       </mesh>
       {[0, 1, 2].map(i => (
         <mesh
@@ -106,9 +134,9 @@ export default function Lotus() {
           <meshBasicMaterial color="#ffffff" transparent opacity={0.4} depthWrite={false} />
         </mesh>
       ))}
-      <LilyPad position={[-2.1, -0.08, 0.7]} radius={0.62} rotation={0.4} />
-      <LilyPad position={[2.0, -0.08, 0.9]} radius={0.5} rotation={2.2} />
-      <LilyPad position={[1.3, -0.08, -1.7]} radius={0.55} rotation={4.1} />
+      <LilyPad position={[-1.7, -0.08, 0.5]} radius={0.5} rotation={0.4} />
+      <LilyPad position={[1.6, -0.08, 0.8]} radius={0.42} rotation={2.2} />
+      <LilyPad position={[1.1, -0.08, -1.4]} radius={0.45} rotation={4.1} />
 
       <group ref={root}>
         {RINGS.map((ring, r) => (
@@ -117,7 +145,7 @@ export default function Lotus() {
               <Petal
                 key={p.key}
                 angle={p.angle}
-                ring={ring}
+                geo={geos[r]}
                 tiltRef={el => {
                   (tilts.current[r] ||= [])[i] = el;
                 }}
@@ -126,12 +154,12 @@ export default function Lotus() {
           </group>
         ))}
         <mesh position={[0, 0.16, 0]}>
-          <cylinderGeometry args={[0.22, 0.28, 0.16, 8]} />
+          <cylinderGeometry args={[0.22, 0.28, 0.16, 40]} />
           <Mat color={C.gold} />
         </mesh>
         {stamens.map(a => (
           <mesh key={a} position={[Math.cos(a) * 0.3, 0.28, Math.sin(a) * 0.3]}>
-            <sphereGeometry args={[0.05, 6, 5]} />
+            <sphereGeometry args={[0.05, 32, 20]} />
             <Mat color={C.saffron} />
           </mesh>
         ))}

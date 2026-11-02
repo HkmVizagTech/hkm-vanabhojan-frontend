@@ -3,7 +3,7 @@ import {
   Box, Button, Center, Container, Flex, Heading, HStack, Icon, Image, Link, SimpleGrid, Spinner, Stack, Text, VStack,
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
-import { ArrowLeft, CalendarDays, CalendarPlus, CheckCircle2, Mail, MapPin, MessageCircle, Navigation, Phone, QrCode, XCircle } from 'lucide-react';
+import { ArrowLeft, CalendarDays, CalendarPlus, CheckCircle2, IdCard, Mail, MapPin, MessageCircle, Navigation, Phone, QrCode, XCircle } from 'lucide-react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { EVENT, HIGHLIGHTS } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
@@ -12,7 +12,7 @@ import { downloadEventIcs } from '../../utils/calendar';
 import { formatINR } from '../../utils/format';
 import PublicShell from '../../components/layout/PublicShell';
 import Figure from '../../components/three/Figure';
-import logo from '../../assets/newLogo.png';
+import logo from '../../assets/logo.svg';
 import { usePaymentStatus } from './usePaymentStatus';
 
 function StatusCard({ icon, title, color, children }) {
@@ -44,6 +44,7 @@ function SuccessView({ candidate, paymentId }) {
   const { event } = useCurrentEvent();
   const root = useRef(null);
   const reduced = usePrefersReducedMotion();
+  const isStudent = candidate?.collegeOrWorking === 'College' && candidate?.paymentMethod !== 'Cash';
 
   useGSAP(
     () => {
@@ -62,18 +63,18 @@ function SuccessView({ candidate, paymentId }) {
     <Container ref={root} maxW="2xl" py={{ base: 4, md: 10 }}>
       <Flex align="center" justify="center" gap={4} mb={4} className="ty-reveal" flexWrap="wrap">
         <Box position="relative" minW="96px">
-          <Image src={logo} alt="Vanabhojanam Youth Festival Logo" boxSize="96px" borderRadius="full" shadow="lg" bg="white" />
+          <Image src={logo} alt="Vanabhojanam logo" boxSize="96px" borderRadius="full" shadow="lg" />
           <Center className="ty-check" position="absolute" top="-2" right="-2" bg="green.500" borderRadius="full" p={1}>
             <Icon as={CheckCircle2} boxSize={6} color="white" />
           </Center>
         </Box>
         <Box>
-          <Heading size="lg" lineHeight="short">VANABHOJANAM <br /> Youth Festival</Heading>
+          <Heading size="lg" lineHeight="short">VANABHOJANAM</Heading>
           <Text fontWeight="semibold" mt={1} color="text.muted">{EVENT.tagline}</Text>
         </Box>
       </Flex>
 
-      <Box className="ty-reveal" bgGradient="linear(to-r, brand.600, brand.400)" color="white" p={6} borderRadius="2xl" shadow="xl" textAlign="center" mb={2}>
+      <Box className="ty-reveal" bg="brand.700" color="white" p={6} borderRadius="2xl" shadow="soft" textAlign="center" mb={2}>
         <Heading fontSize="3xl" mb={1}>Registration Successful!</Heading>
         <Text fontSize="lg" opacity={0.92}>Welcome to {event?.title || EVENT.title}</Text>
       </Box>
@@ -95,6 +96,13 @@ function SuccessView({ candidate, paymentId }) {
         <Heading size="md" textAlign="center" color="text.heading">Your Registration is Confirmed!</Heading>
         {event && <InfoRow icon={CalendarDays} title="Event Date">{event.dateLabel}</InfoRow>}
         {event && <InfoRow icon={MapPin} title="Venue">{[event.venue.name, event.venue.address].filter(Boolean).join(', ')}</InfoRow>}
+        {isStudent ? (
+          <InfoRow icon={IdCard} title="Bring your student ID">
+            Please carry your college ID card to the event. Our team will verify it and send your QR on WhatsApp once approved.
+          </InfoRow>
+        ) : (
+          <InfoRow icon={QrCode} title="At the gate">Show your QR code at the gate for a quick scan.</InfoRow>
+        )}
         <InfoRow icon={Phone} title="WhatsApp Updates">You'll receive event updates and group links on WhatsApp</InfoRow>
         <Box p={3} bg="brand.50" _dark={{ bg: 'whiteAlpha.100' }} borderRadius="lg">
           <Text fontWeight="semibold" color="text.heading">Highlights</Text>
@@ -103,7 +111,7 @@ function SuccessView({ candidate, paymentId }) {
           </SimpleGrid>
         </Box>
         <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={3}>
-          <Button as={RouterLink} to="/attendance" leftIcon={<QrCode size={18} />} variant="festival">View my QR code</Button>
+          {!isStudent && <Button as={RouterLink} to="/attendance" leftIcon={<QrCode size={18} />} variant="festival">View my QR code</Button>}
           {event && <Button onClick={() => downloadEventIcs(event)} leftIcon={<CalendarPlus size={18} />} variant="outline">Add to calendar</Button>}
           {event && <Button as={Link} href={event.venue.mapsUrl} isExternal leftIcon={<Navigation size={18} />} variant="outline" _hover={{ textDecoration: 'none' }}>Get directions</Button>}
           <Button as={Link} href={`https://wa.me/?text=${shareText}`} isExternal leftIcon={<MessageCircle size={18} />} colorScheme="green" variant="outline" _hover={{ textDecoration: 'none' }}>Invite a friend</Button>
@@ -126,7 +134,7 @@ function SuccessView({ candidate, paymentId }) {
           Register Another Participant
         </Button>
       </Center>
-      <Box className="ty-reveal" textAlign="center" mt={6} p={4} bgGradient="linear(to-r, brand.600, brand.400)" color="white" borderRadius="xl">
+      <Box className="ty-reveal" textAlign="center" mt={6} p={4} bg="brand.700" color="white" borderRadius="xl">
         <Text fontWeight="semibold" mb={1}>🙏 Hare Krishna! 🙏</Text>
         <Text fontSize="sm" opacity={0.92}>We're excited for a day with nature & divine!</Text>
       </Box>

@@ -25,7 +25,7 @@ export default function SectionHeading({ eyebrow, title, subtitle, light = false
           {subtitle}
         </Text>
       )}
-      <Box mt={4} h="3px" w="64px" mx={align === 'center' ? 'auto' : undefined} borderRadius="full" bgGradient="linear(to-r, saffron.400, lotus.400)" />
+      <Box mt={4} h="2px" w="48px" mx={align === 'center' ? 'auto' : undefined} bg="saffron.400" />
     </Reveal>
   );
 }

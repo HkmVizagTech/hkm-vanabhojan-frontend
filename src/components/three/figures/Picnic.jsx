@@ -6,12 +6,12 @@ import { Mat } from '../Mat';
 import { useFigure } from '../figureContext';
 
 const FRIENDS = [
-  { shirt: '#f08a24', skin: C.skin },
-  { shirt: '#e44d82', skin: C.skinDark },
-  { shirt: '#58ac77', skin: C.skin },
-  { shirt: '#4a90d9', skin: C.skinDark },
-  { shirt: '#f6c445', skin: C.skin },
-  { shirt: '#8e5bd1', skin: C.skinDark },
+  { shirt: '#c98a46', skin: C.skin },
+  { shirt: '#b8707e', skin: C.skinDark },
+  { shirt: '#6c9a7c', skin: C.skin },
+  { shirt: '#6d88aa', skin: C.skinDark },
+  { shirt: '#d1b062', skin: C.skin },
+  { shirt: '#8576a3', skin: C.skinDark },
 ];
 
 /** A seated cowherd friend. Local +z faces the centre of the circle. */
@@ -19,27 +19,27 @@ function Friend({ shirt, skin, innerRef }) {
   return (
     <group ref={innerRef}>
       <mesh position={[0, 0.1, 0]} scale={[0.3, 0.13, 0.26]}>
-        <sphereGeometry args={[1, 8, 6]} />
+        <sphereGeometry args={[1, 32, 20]} />
         <Mat color={C.white} />
       </mesh>
       <mesh position={[0, 0.32, 0]}>
-        <capsuleGeometry args={[0.15, 0.24, 3, 8]} />
+        <capsuleGeometry args={[0.15, 0.24, 8, 24]} />
         <Mat color={shirt} />
       </mesh>
       <mesh position={[0, 0.66, 0]}>
-        <sphereGeometry args={[0.15, 12, 10]} />
+        <sphereGeometry args={[0.15, 32, 20]} />
         <Mat color={skin} flat={false} />
       </mesh>
       <mesh position={[0, 0.7, -0.01]} rotation={[-0.15, 0, 0]}>
-        <sphereGeometry args={[0.155, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <sphereGeometry args={[0.155, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <Mat color={C.ink} />
       </mesh>
       <mesh position={[0.1, 0.5, 0.14]} rotation={[0.9, 0, -0.3]}>
-        <capsuleGeometry args={[0.04, 0.16, 2, 6]} />
+        <capsuleGeometry args={[0.04, 0.16, 8, 24]} />
         <Mat color={skin} flat={false} />
       </mesh>
       <mesh position={[-0.1, 0.5, 0.14]} rotation={[0.9, 0, 0.3]}>
-        <capsuleGeometry args={[0.04, 0.16, 2, 6]} />
+        <capsuleGeometry args={[0.04, 0.16, 8, 24]} />
         <Mat color={skin} flat={false} />
       </mesh>
     </group>
@@ -50,54 +50,95 @@ function Krishna({ innerRef }) {
   return (
     <group ref={innerRef} scale={1.15}>
       <mesh position={[0, 0.1, 0]} scale={[0.34, 0.14, 0.28]}>
-        <sphereGeometry args={[1, 8, 6]} />
+        <sphereGeometry args={[1, 32, 20]} />
         <Mat color={C.gold} />
       </mesh>
       <mesh position={[0, 0.34, 0]}>
-        <capsuleGeometry args={[0.15, 0.26, 3, 8]} />
+        <capsuleGeometry args={[0.15, 0.26, 8, 24]} />
         <Mat color={C.shyam} flat={false} />
       </mesh>
       <mesh position={[0, 0.52, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.13, 0.025, 6, 14]} />
+        <torusGeometry args={[0.13, 0.025, 20, 64]} />
         <Mat color={C.white} />
       </mesh>
       <mesh position={[0, 0.7, 0]}>
-        <sphereGeometry args={[0.16, 14, 12]} />
+        <sphereGeometry args={[0.16, 32, 20]} />
         <Mat color={C.shyam} flat={false} />
       </mesh>
       <mesh position={[0, 0.74, -0.015]} rotation={[-0.15, 0, 0]}>
-        <sphereGeometry args={[0.165, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <sphereGeometry args={[0.165, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <Mat color={C.ink} />
       </mesh>
       <mesh position={[0, 0.83, 0.02]}>
-        <cylinderGeometry args={[0.1, 0.12, 0.06, 10]} />
+        <cylinderGeometry args={[0.1, 0.12, 0.06, 40]} />
         <Mat color={C.gold} metal={0.2} />
       </mesh>
       {/* peacock feather */}
       <group position={[0.03, 0.87, 0.02]} rotation={[0, 0, -0.35]}>
         <mesh position={[0, 0.16, 0]}>
-          <cylinderGeometry args={[0.008, 0.008, 0.34, 5]} />
+          <cylinderGeometry args={[0.008, 0.008, 0.34, 40]} />
           <Mat color={C.leafDark} />
         </mesh>
         <mesh position={[0, 0.36, 0]} scale={[0.07, 0.12, 0.02]}>
-          <sphereGeometry args={[1, 10, 8]} />
-          <Mat color="#1aa6a0" flat={false} />
+          <sphereGeometry args={[1, 32, 20]} />
+          <Mat color="#3d8b88" flat={false} />
         </mesh>
         <mesh position={[0, 0.37, 0.018]} scale={[0.035, 0.06, 0.01]}>
-          <sphereGeometry args={[1, 8, 6]} />
+          <sphereGeometry args={[1, 32, 20]} />
           <Mat color={C.navy} flat={false} />
         </mesh>
         <mesh position={[0, 0.375, 0.026]} scale={[0.015, 0.025, 0.01]}>
-          <sphereGeometry args={[1, 6, 5]} />
+          <sphereGeometry args={[1, 32, 20]} />
           <Mat color={C.gold} flat={false} />
         </mesh>
       </group>
       {/* flute */}
       <mesh position={[0.04, 0.66, 0.2]} rotation={[0.1, 0, Math.PI / 2 - 0.3]}>
-        <cylinderGeometry args={[0.012, 0.012, 0.5, 6]} />
+        <cylinderGeometry args={[0.012, 0.012, 0.5, 40]} />
         <Mat color={C.gold} metal={0.2} />
       </mesh>
     </group>
+  );
+}
+
+const FLOWERS = [
+  [-2.1, 0.6, '#f2c14e'], [-1.7, 1.5, '#ffffff'], [-2.5, -0.4, '#e98a8a'], [2.0, 1.2, '#f2c14e'], [2.5, 0.2, '#ffffff'],
+  [1.6, 1.9, '#e98a8a'], [-0.9, 2.1, '#f2c14e'], [0.7, 2.4, '#ffffff'], [-2.2, -1.2, '#f2c14e'], [2.2, -0.8, '#e98a8a'],
+];
+
+/** Wild flowers scattered around the clearing. */
+function Flowers() {
+  return FLOWERS.map(([x, z, color], i) => (
+    <group key={i} position={[x, 0, z]}>
+      <mesh position={[0, 0.07, 0]}>
+        <cylinderGeometry args={[0.008, 0.008, 0.14, 8]} />
+        <Mat color="#4c8a4a" />
+      </mesh>
+      <mesh position={[0, 0.16, 0]} scale={[1, 0.6, 1]}>
+        <sphereGeometry args={[0.055, 16, 12]} />
+        <Mat color={color} rough={0.6} />
+      </mesh>
+      <mesh position={[0, 0.175, 0]}>
+        <sphereGeometry args={[0.02, 12, 8]} />
+        <Mat color="#d79a2b" />
+      </mesh>
+    </group>
+  ));
+}
+
+/** Soft rolling hills behind the grove. */
+function Hills() {
+  return (
+    <>
+      <mesh position={[-1.8, -0.45, -3.6]} scale={[3.6, 1.1, 1.6]}>
+        <sphereGeometry args={[1, 48, 24]} />
+        <Mat color="#8fbf73" rough={1} />
+      </mesh>
+      <mesh position={[2.0, -0.6, -4.3]} scale={[4.2, 1.3, 1.8]}>
+        <sphereGeometry args={[1, 48, 24]} />
+        <Mat color="#76a964" rough={1} />
+      </mesh>
+    </>
   );
 }
 
@@ -111,21 +152,21 @@ function Tree({ position, scale = 1, phase = 0 }) {
   return (
     <group position={position} scale={scale}>
       <mesh position={[0, 0.5, 0]}>
-        <cylinderGeometry args={[0.1, 0.16, 1, 7]} />
-        <Mat color={C.bark} />
+        <cylinderGeometry args={[0.1, 0.16, 1, 40]} />
+        <Mat color="#6b4a2e" rough={0.85} />
       </mesh>
       <group ref={ref} position={[0, 1, 0]}>
         <mesh position={[0, 0.25, 0]}>
-          <icosahedronGeometry args={[0.55, 0]} />
-          <Mat color={C.leaf} />
+          <icosahedronGeometry args={[0.55, 3]} />
+          <Mat color="#2f6f46" rough={0.7} />
         </mesh>
         <mesh position={[0.28, 0.65, 0.1]}>
-          <icosahedronGeometry args={[0.4, 0]} />
-          <Mat color="#3aa066" />
+          <icosahedronGeometry args={[0.4, 3]} />
+          <Mat color="#3f8a52" rough={0.7} />
         </mesh>
         <mesh position={[-0.22, 0.78, -0.05]}>
-          <icosahedronGeometry args={[0.34, 0]} />
-          <Mat color="#58ac77" />
+          <icosahedronGeometry args={[0.34, 3]} />
+          <Mat color="#5fa75f" rough={0.7} />
         </mesh>
       </group>
     </group>
@@ -174,16 +215,22 @@ export default function Picnic() {
   return (
     <group ref={root} position={[0, -0.7, 0]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[2.9, 40]} />
-        <Mat color={C.grass} flat={false} />
+        <circleGeometry args={[3.1, 72]} />
+        <Mat color="#7fae5f" rough={0.95} />
       </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
+        <ringGeometry args={[2.3, 3.1, 72]} />
+        <Mat color="#6c9b52" rough={0.95} />
+      </mesh>
+      <Hills />
+      <Flowers />
       <mesh position={[0, 0.02, 0]}>
-        <cylinderGeometry args={[1.0, 1.0, 0.03, 28]} />
-        <Mat color={C.saffron} />
+        <cylinderGeometry args={[1.0, 1.0, 0.03, 40]} />
+        <Mat color="#e8cf8a" rough={0.8} />
       </mesh>
       {food.map(([x, z, color], i) => (
         <mesh key={i} position={[x, 0.1, z]}>
-          <sphereGeometry args={[0.09, 8, 6]} />
+          <sphereGeometry args={[0.09, 32, 20]} />
           <Mat color={color} flat={false} />
         </mesh>
       ))}

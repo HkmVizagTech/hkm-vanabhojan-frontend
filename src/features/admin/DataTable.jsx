@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
-import { Box, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import EmptyState from '../../components/common/EmptyState';
 
 const Row = memo(function Row({ row, index, columns, onRowClick, rowProps }) {
   return (
@@ -24,12 +25,12 @@ const Row = memo(function Row({ row, index, columns, onRowClick, rowProps }) {
  */
 export default function DataTable({ columns, rows, rowKey = '_id', offset = 0, onRowClick, rowProps, emptyText }) {
   return (
-    <Box overflowX="auto" borderRadius="xl" borderWidth="1px" borderColor="border.soft" bg="bg.card">
+    <Box overflowX="auto" borderRadius="2xl" borderWidth="1px" borderColor="border.soft" bg="bg.card" boxShadow="0 1px 2px rgba(16,24,40,0.04)">
       <Table size="sm" variant="simple">
         <Thead position="sticky" top={0} zIndex={1} bg="bg.subtle">
           <Tr>
             {columns.map(col => (
-              <Th key={col.key} whiteSpace="nowrap">{col.header}</Th>
+              <Th key={col.key} whiteSpace="nowrap" py={3}>{col.header}</Th>
             ))}
           </Tr>
         </Thead>
@@ -46,8 +47,8 @@ export default function DataTable({ columns, rows, rowKey = '_id', offset = 0, o
           ))}
           {rows.length === 0 && (
             <Tr>
-              <Td colSpan={columns.length}>
-                <Text color="text.muted" textAlign="center" py={10}>{emptyText}</Text>
+              <Td colSpan={columns.length} borderBottom="none">
+                {typeof emptyText === 'string' ? <EmptyState title={emptyText} /> : emptyText}
               </Td>
             </Tr>
           )}
