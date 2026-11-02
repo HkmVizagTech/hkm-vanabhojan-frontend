@@ -12,6 +12,7 @@ import {
   HStack,
   Image,
   Input,
+  Link,
   InputGroup,
   InputLeftAddon,
   Radio,
@@ -22,6 +23,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
+import { Link as RouterLink } from 'react-router-dom';
 import { COLLEGE_YEARS, HOW_DID_YOU_KNOW } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { registrationApi } from '../../services/registration';
@@ -316,7 +318,10 @@ export default function RegistrationForm() {
               {cta}
             </Button>
             <Text textAlign="center" fontSize="sm" color="text.muted">
-              Secure payment via Razorpay. Your QR pass is sent to your WhatsApp number.
+              Secure payment via Razorpay. Already registered?{' '}
+              <Link as={RouterLink} to="/attendance" color="brand.600" fontWeight="bold" textDecoration="underline">
+                View your QR code
+              </Link>
             </Text>
           </Stack>
         </form>

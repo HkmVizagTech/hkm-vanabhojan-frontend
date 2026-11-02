@@ -29,6 +29,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<RegistrationPage />} />
         <Route path="/thankyou/:id" element={<ThankYouPage />} />
+        <Route path="/attendance" element={<QrLookupPage />} />
         <Route path="/admin/login" element={<LoginPage />} />
 
         <Route element={<RequireAuth allowedRoles={STAFF} />}>
@@ -38,7 +39,7 @@ export default function AppRoutes() {
               <Route path="/admin/cash" element={<CashDeskPage />} />
             </Route>
             <Route path="/admin/AdminAttendanceScannedList" element={<ScannedListPage />} />
-            <Route path="/admin/qr" element={<QrLookupPage />} />
+            <Route path="/admin/qr" element={<QrLookupPage embedded />} />
             <Route element={<RequireAuth allowedRoles={ADMIN_ONLY} />}>
               <Route path="/admin" element={<CandidatesPage />} />
               <Route path="/admin/attendance" element={<AttendancePage />} />

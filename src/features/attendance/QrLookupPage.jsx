@@ -1,12 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import {
   Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, Center, Container, Heading, HStack, Icon, Input,
-  InputGroup, InputLeftAddon, SimpleGrid, Text, VStack,
+  InputGroup, InputLeftAddon, Link, SimpleGrid, Text, VStack,
 } from '@chakra-ui/react';
 import { CheckCircle2, Clock, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { EVENT } from '../../config/event';
 import { formatDateTime, onlyDigits, ordinalYear } from '../../utils/format';
+import PublicShell from '../../components/layout/PublicShell';
 import FormField from '../../components/common/FormField';
+import Figure from '../../components/three/Figure';
 import { useQrLookup } from './useQrLookup';
 
 function QrCard({ candidate }) {
@@ -34,17 +37,19 @@ function QrCard({ candidate }) {
         <QRCodeSVG value={candidate.attendanceToken} size={168} />
       </Box>
       {attendedAt && <Text fontSize="xs" color="text.muted">Attended: {formatDateTime(attendedAt)}</Text>}
-      {!attended && <Text fontSize="xs" color="orange.600" fontWeight="bold">📱 Scan at the gate for attendance</Text>}
+      {!attended && <Text fontSize="xs" color="orange.600" fontWeight="bold">📱 Show this QR to admin for attendance</Text>}
     </VStack>
   );
 }
 
-export default function QrLookupPage() {
+export default function QrLookupPage({ embedded = false }) {
   const [phone, setPhone] = useState('');
   const { loading, fieldError, notFound, error, candidates, total, lookup } = useQrLookup();
 
   const attended = useMemo(() => candidates.filter(c => c.isAttended).length, [candidates]);
   const pending = total - attended;
+
+  const Shell = embedded ? React.Fragment : PublicShell;
 
   const submit = async e => {
     e.preventDefault();
@@ -52,12 +57,13 @@ export default function QrLookupPage() {
   };
 
   return (
-    <>
+    <Shell>
       <Container maxW={candidates.length > 1 ? '2xl' : 'md'} py={{ base: 6, md: 12 }}>
         <Box bg="bg.card" borderRadius="3xl" p={{ base: 5, md: 8 }} boxShadow="xl" textAlign="center" borderWidth="1px" borderColor="border.soft">
-          <Heading size="lg" color="text.heading">QR lookup</Heading>
+          {!embedded && <Figure name="lotus" label="A blooming lotus" softEdges h="150px" mt={-2} />}
+          <Heading size="xl" color="text.heading">{embedded ? 'QR lookup' : 'View QR Codes'}</Heading>
           <Text mb={6} mt={1} color="text.muted">
-            Enter a participant's WhatsApp number to see their entry QR. For staff only: please do not share it.
+            {embedded ? "Enter a participant's WhatsApp number to see their entry QR." : 'Enter your WhatsApp mobile number to view all your QR codes for attendance.'}
           </Text>
 
           <form onSubmit={submit} noValidate>
@@ -87,8 +93,13 @@ export default function QrLookupPage() {
             <Alert status="warning" mt={6} borderRadius="lg" alignItems="flex-start" textAlign="left">
               <AlertIcon />
               <Box>
-                <AlertTitle>Number not registered</AlertTitle>
-                <AlertDescription>No registration was found for this number in the current event.</AlertDescription>
+                <AlertTitle>Number not registered!</AlertTitle>
+                <AlertDescription>
+                  Please register here:{' '}
+                  <Link href={EVENT.registrationUrl} isExternal fontWeight="bold" textDecoration="underline">{EVENT.registrationUrl}</Link>
+                  <br />
+                  And please visit the enquiry counter.
+                </AlertDescription>
               </Box>
             </Alert>
           )}
@@ -117,7 +128,7 @@ export default function QrLookupPage() {
 
               <Box mt={6}>
                 <Text fontWeight="bold" color="brand.600">
-                  Scan {total > 1 ? 'each QR code' : 'this QR code'} at the gate for attendance.
+                  Show {total > 1 ? 'individual QR codes' : 'this QR code'} to admin for attendance.
                 </Text>
                 {total > 1 && <Text mt={1} fontSize="sm" color="text.muted">Each person must scan their own QR code individually.</Text>}
                 <HStack justify="center" mt={3} spacing={4}>
@@ -129,6 +140,6 @@ export default function QrLookupPage() {
           )}
         </Box>
       </Container>
-    </>
+    </Shell>
   );
 }

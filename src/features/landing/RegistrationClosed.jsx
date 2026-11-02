@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Heading, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 import { Link } from '@chakra-ui/react';
 import { EVENT } from '../../config/event';
 
@@ -21,6 +22,12 @@ export default function RegistrationClosed({ event, loading }) {
         {event
           ? `Thank you for your interest in ${event.name}. Registrations are not being accepted right now.`
           : 'The next Vanabhojanam has not been announced yet. Please check back soon.'}
+      </Text>
+      <Text mt={4} fontSize="sm">
+        Already registered?{' '}
+        <Link as={RouterLink} to="/attendance" color="brand.600" fontWeight="bold" textDecoration="underline">
+          View your QR code
+        </Link>
       </Text>
       <Text mt={2} fontSize="sm" color="text.muted">
         Questions? <Link href={`mailto:${EVENT.contact.email}`} textDecoration="underline">{EVENT.contact.email}</Link>
