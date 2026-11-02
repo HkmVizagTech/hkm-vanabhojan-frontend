@@ -4,7 +4,7 @@ import {
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { ArrowLeft, CalendarDays, CalendarPlus, CheckCircle2, IdCard, Mail, MapPin, MessageCircle, Navigation, Phone, QrCode, XCircle } from 'lucide-react';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { EVENT, HIGHLIGHTS } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { gsap, useGSAP } from '../../lib/gsap';
@@ -111,7 +111,6 @@ function SuccessView({ candidate, paymentId }) {
           </SimpleGrid>
         </Box>
         <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={3}>
-          {!isStudent && <Button as={RouterLink} to="/attendance" leftIcon={<QrCode size={18} />} variant="festival">View my QR code</Button>}
           {event && <Button onClick={() => downloadEventIcs(event)} leftIcon={<CalendarPlus size={18} />} variant="outline">Add to calendar</Button>}
           {event && <Button as={Link} href={event.venue.mapsUrl} isExternal leftIcon={<Navigation size={18} />} variant="outline" _hover={{ textDecoration: 'none' }}>Get directions</Button>}
           <Button as={Link} href={`https://wa.me/?text=${shareText}`} isExternal leftIcon={<MessageCircle size={18} />} colorScheme="green" variant="outline" _hover={{ textDecoration: 'none' }}>Invite a friend</Button>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Container, Link, Text } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
 import { EVENT } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { formatINR } from '../../utils/format';
@@ -27,19 +26,11 @@ function buildFaqs(event) {
   items.push(
     {
       q: 'What should I bring?',
-      a: 'Your QR pass (on WhatsApp or on this website) and, if you registered as a student, your college ID card for verification.',
+      a: 'Your QR pass from WhatsApp and, if you registered as a student, your college ID card for verification.',
     },
     {
       q: 'I did not get my QR. What now?',
-      a: (
-        <>
-          Open{' '}
-          <Link as={RouterLink} to="/attendance" color="brand.600" fontWeight="bold" textDecoration="underline">
-            View my QR
-          </Link>{' '}
-          and enter the WhatsApp number you registered with. Every registration under that number appears there.
-        </>
-      ),
+      a: 'Your QR is sent only to the WhatsApp number you registered with, so it stays private. Students receive it after their ID is verified. If it still has not arrived, contact us and we will resend it.',
     },
     {
       q: 'Can I register friends or family?',

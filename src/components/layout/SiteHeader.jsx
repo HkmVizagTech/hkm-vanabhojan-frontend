@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, HStack, Image, Link, Text } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { QrCode } from 'lucide-react';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import logo from '../../assets/logo.svg';
 
@@ -82,9 +80,6 @@ export default function SiteHeader({ onRegister }) {
         </HStack>
 
         <HStack spacing={2}>
-          <Button as={RouterLink} to="/attendance" size="sm" variant="ghost" color="white" _hover={{ bg: 'whiteAlpha.200' }} leftIcon={<QrCode size={16} />} display={{ base: 'none', sm: 'inline-flex' }}>
-            My QR
-          </Button>
           <Button size="sm" variant="brass" px={5} onClick={onRegister}>
             {registerLabel}
           </Button>

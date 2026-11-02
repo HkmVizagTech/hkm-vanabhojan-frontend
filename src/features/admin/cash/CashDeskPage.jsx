@@ -223,7 +223,6 @@ export default function CashDeskPage() {
                 <>
                   <Alert status="warning" borderRadius="lg" fontSize="sm" textAlign="left"><AlertIcon />Registered, but the WhatsApp could not be sent: {done.whatsapp.error}</Alert>
                   <Button size="sm" leftIcon={<Send size={14} />} isLoading={resendingId === done.candidate.id} onClick={() => resend(done.candidate)}>Try sending again</Button>
-                  <Text fontSize="xs" color="text.muted">They can also see their QR any time at the website's "View your QR code" page with their number.</Text>
                 </>
               )}
               <Button variant="outline" size="sm" onClick={() => setDone(null)}>Done</Button>

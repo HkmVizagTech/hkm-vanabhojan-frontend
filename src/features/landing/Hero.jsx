@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { Box, Button, Container, Flex, Heading, HStack, Image, Text, VStack, usePrefersReducedMotion } from '@chakra-ui/react';
-import { ArrowDown, CalendarDays, MapPin, QrCode, Sparkles } from 'lucide-react';
-import { Link as RouterLink } from 'react-router-dom';
+import { ArrowDown, CalendarDays, MapPin, Sparkles } from 'lucide-react';
 import { EVENT } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { gsap, useGSAP } from '../../lib/gsap';
@@ -202,9 +201,6 @@ export default function Hero({ onRegister }) {
             <HStack className="hero-cta" spacing={3} flexWrap="wrap" justify="center">
               <Button variant="brass" size="lg" px={8} h="56px" fontSize="md" rightIcon={<ArrowDown size={18} />} onClick={onRegister}>
                 {closed ? 'Registration closed' : 'Register Now'}
-              </Button>
-              <Button as={RouterLink} to="/attendance" size="lg" h="56px" variant="outline" color="white" borderColor="whiteAlpha.400" leftIcon={<QrCode size={18} />} _hover={{ bg: 'whiteAlpha.200' }}>
-                View my QR
               </Button>
             </HStack>
 
