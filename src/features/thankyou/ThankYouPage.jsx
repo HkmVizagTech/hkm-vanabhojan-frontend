@@ -63,13 +63,13 @@ function SuccessView({ candidate, paymentId }) {
     <Container ref={root} maxW="2xl" py={{ base: 4, md: 10 }}>
       <Flex align="center" justify="center" gap={4} mb={4} className="ty-reveal" flexWrap="wrap">
         <Box position="relative" minW="96px">
-          <Image src={logo} alt="Vanabhojanam logo" boxSize="96px" borderRadius="full" shadow="lg" />
+          <Image src={logo} alt="Karthik Vanabhojanam logo" boxSize="96px" borderRadius="full" shadow="lg" />
           <Center className="ty-check" position="absolute" top="-2" right="-2" bg="green.500" borderRadius="full" p={1}>
             <Icon as={CheckCircle2} boxSize={6} color="white" />
           </Center>
         </Box>
         <Box>
-          <Heading size="lg" lineHeight="short">VANABHOJANAM</Heading>
+          <Heading size="lg" lineHeight="short">KARTHIK VANABHOJANAM</Heading>
           <Text fontWeight="semibold" mt={1} color="text.muted">{EVENT.tagline}</Text>
         </Box>
       </Flex>

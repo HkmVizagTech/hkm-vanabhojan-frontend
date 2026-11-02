@@ -137,7 +137,7 @@ const Brand = () => (
   <HStack spacing={3} mb={7} px={1}>
     <Image src={logo} alt="" boxSize="42px" borderRadius="full" />
     <Box lineHeight="1.1">
-      <Text fontFamily="heading" fontSize="xl" fontWeight="bold">Vanabhojanam</Text>
+      <Text fontFamily="heading" fontSize="xl" fontWeight="bold" lineHeight="1.1">Karthik Vanabhojanam</Text>
       <Text fontSize="xs" color="whiteAlpha.700">Admin console</Text>
     </Box>
   </HStack>
@@ -165,7 +165,7 @@ export default function Sidebar() {
         boxShadow="md"
       >
         <IconButton aria-label="Open menu" icon={<Menu size={22} />} onClick={onOpen} variant="ghost" color="white" _hover={{ bg: 'whiteAlpha.200' }} />
-        <Text fontFamily="heading" fontSize="xl" fontWeight="bold">Vanabhojanam</Text>
+        <Text fontFamily="heading" fontSize="xl" fontWeight="bold" lineHeight="1.1">Karthik Vanabhojanam</Text>
       </HStack>
 
       <Flex

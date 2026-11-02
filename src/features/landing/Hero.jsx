@@ -162,7 +162,7 @@ export default function Hero({ onRegister }) {
               </HStack>
             )}
 
-            <Heading as="h1" aria-label={`Karthik ${EVENT.name}`} lineHeight="0.95">
+            <Heading as="h1" aria-label={EVENT.name} lineHeight="0.95">
               <Box as="span" display="block" overflow="hidden" pb="0.2em">
                 <Box as="span" className="hero-word" display="inline-block" fontFamily="heading" fontStyle="italic" fontWeight={500} fontSize={{ base: '2xl', md: '4xl' }} letterSpacing="0.28em" color="saffron.300" textTransform="uppercase" mb={{ base: 1, md: 2 }}>
                   Karthik

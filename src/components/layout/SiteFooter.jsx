@@ -35,10 +35,10 @@ export default function SiteFooter() {
           <Stack spacing={4}>
             <HStack spacing={3}>
               <Image src={logo} alt="" boxSize="46px" borderRadius="full" />
-              <Heading as="p" size="md" fontFamily="heading" color="white">Vanabhojanam</Heading>
+              <Heading as="p" size="md" fontFamily="heading" color="white">Karthik Vanabhojanam</Heading>
             </HStack>
             <Text fontSize="sm" color="whiteAlpha.800" maxW="xs">
-              {EVENT.tagline}. A youth festival by {EVENT.organiser}.
+              {EVENT.tagline}. Organised by {EVENT.organiser}.
             </Text>
           </Stack>
 
