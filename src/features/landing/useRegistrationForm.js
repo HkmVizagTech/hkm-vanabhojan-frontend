@@ -50,7 +50,7 @@ export function useRegistrationForm() {
 
   /** Validates, shows errors and focuses the first invalid field. Returns true when valid. */
   const validate = useCallback(() => {
-    const found = validateRegistration(values);
+    const found = validateRegistration(values, { hasIdCard: Boolean(idCard.file) });
     setErrors(found);
     const first = FIELD_ORDER.find(f => found[f]);
     if (first) {
@@ -59,7 +59,7 @@ export function useRegistrationForm() {
       field?.querySelector('input, select, textarea')?.focus({ preventScroll: true });
     }
     return !first;
-  }, [values]);
+  }, [values, idCard.file]);
 
   return { values, errors, setField, idCard, pickIdCard, clearIdCard, validate };
 }

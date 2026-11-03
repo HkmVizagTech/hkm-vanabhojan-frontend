@@ -42,7 +42,7 @@ export default function EventStrip() {
                 <Text as="span" color="brand.600" _dark={{ color: 'brand.200' }}>{formatINR(event.fees.College.amount)}</Text> students
               </Text>
               <Text fontWeight="bold">
-                <Text as="span" color="brand.600" _dark={{ color: 'brand.200' }}>{formatINR(event.fees.Working.amount)}</Text> others
+                <Text as="span" color="brand.600" _dark={{ color: 'brand.200' }}>{formatINR(event.fees.Working.amount)}</Text> working
               </Text>
             </Tile>
           </SimpleGrid>

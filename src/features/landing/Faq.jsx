@@ -13,11 +13,11 @@ function buildFaqs(event) {
   if (event) {
     items.push({
       q: 'Who can join?',
-      a: 'College students and working youth are both welcome.',
+      a: 'Students and working youth are both welcome.',
     });
     items.push({
       q: 'How much is the registration fee?',
-      a: `${formatINR(event.fees.College.amount)} for college students and ${formatINR(event.fees.Working.amount)} for everyone else.`,
+      a: `${formatINR(event.fees.College.amount)} for students and ${formatINR(event.fees.Working.amount)} for working professionals.`,
     });
     items.push({
       q: 'When and where is it?',
@@ -27,7 +27,7 @@ function buildFaqs(event) {
   items.push(
     {
       q: 'What should I bring?',
-      a: 'Your QR pass (on WhatsApp or on this website) and, if you registered as a student, your college ID card for verification.',
+      a: 'Your QR pass (on WhatsApp or on this website) and, if you registered as a student, your student ID card for verification.',
     },
     {
       q: 'I did not get my QR. What now?',

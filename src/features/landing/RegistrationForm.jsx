@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
 import { Link as RouterLink } from 'react-router-dom';
-import { COLLEGE_YEARS, HOW_DID_YOU_KNOW } from '../../config/event';
+import { COLLEGE_YEARS } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { registrationApi } from '../../services/registration';
 import { preloadRazorpay } from '../../hooks/useRazorpay';
@@ -78,7 +78,7 @@ function FeeBanner({ event, category }) {
         <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
           Registration fee
         </Text>
-        <Text fontSize="sm">{info ? info.label : 'Choose college student or others below'}</Text>
+        <Text fontSize="sm">{info ? info.label : 'Choose student or working below'}</Text>
       </Box>
       <Text fontFamily="heading" fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold" lineHeight="1" whiteSpace="nowrap">
         {fee ? formatINR(fee) : `${formatINR(event.fees.College.amount)} / ${formatINR(event.fees.Working.amount)}`}
@@ -202,11 +202,11 @@ export default function RegistrationForm() {
               </RadioGroup>
             </FormField>
 
-            <FormField id="collegeOrWorking" label="Are you a College Student or Others?" required error={errors.collegeOrWorking}>
+            <FormField id="collegeOrWorking" label="Are you a Student or Working?" required error={errors.collegeOrWorking}>
               <ChakraSelect {...text('collegeOrWorking')}>
                 <option value="">--Select--</option>
-                <option value="College">College Student</option>
-                <option value="Working">Others</option>
+                <option value="College">Student</option>
+                <option value="Working">Working</option>
               </ChakraSelect>
               {isCollege && (
                 <Alert status="success" mt={2} borderRadius="md" fontSize="sm">
@@ -263,8 +263,10 @@ export default function RegistrationForm() {
 
                 <FormField
                   id="studentIdCard"
-                  label="Student ID Card (Optional)"
-                  hint="A clear photo of your ID speeds up entry. JPG, PNG or WebP, max 5MB."
+                  label="Student ID Card"
+                  required
+                  error={errors.studentIdCard}
+                  hint="A clear photo of your student ID card. Our team verifies it before your QR is sent. JPG, PNG or WebP, max 5MB."
                 >
                   <Input
                     type="file"
@@ -294,15 +296,6 @@ export default function RegistrationForm() {
                 </FormField>
               </>
             )}
-
-            <FormField id="howDidYouKnow" label="How you came to know about this Fest" required error={errors.howDidYouKnow}>
-              <ChakraSelect {...text('howDidYouKnow')}>
-                <option value="">--Select--</option>
-                {HOW_DID_YOU_KNOW.map(o => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </ChakraSelect>
-            </FormField>
 
             <Button
               type="submit"

@@ -172,7 +172,7 @@ export default function Hero({ onRegister }) {
                   as="span"
                   className="hero-word"
                   display="inline-block"
-                  fontSize={{ base: '4xl', sm: '6xl', md: '8xl' }}
+                  fontSize={{ base: '3xl', sm: '5xl', md: '7xl', lg: '8xl' }}
                   color="transparent"
                   bgImage="linear-gradient(100deg, #ffffff 0%, #ffffff 42%, #f1d58a 50%, #ffffff 58%, #ffffff 100%)"
                   bgSize="250% 100%"
@@ -206,7 +206,7 @@ export default function Hero({ onRegister }) {
 
             {event && (
               <Text className="hero-sub" fontWeight="semibold" color="saffron.200">
-                {formatINR(event.fees.College.amount)} students · {formatINR(event.fees.Working.amount)} others
+                {formatINR(event.fees.College.amount)} students · {formatINR(event.fees.Working.amount)} working
               </Text>
             )}
 

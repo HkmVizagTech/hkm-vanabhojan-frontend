@@ -39,14 +39,6 @@ export const HIGHLIGHTS = [
   },
 ];
 
-export const HOW_DID_YOU_KNOW = [
-  'Whatsapp Message',
-  'College whatsapp group',
-  'College Notice Board',
-  'Instagram Reel',
-  'At your hostel',
-  'Any other way',
-];
 
 export const COLLEGE_YEARS = [
   { value: '1', label: '1st' },

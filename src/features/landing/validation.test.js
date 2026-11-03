@@ -11,7 +11,6 @@ const valid = {
   college: 'AU College',
   course: 'B.Tech',
   year: '2',
-  howDidYouKnow: 'Instagram Reel',
 };
 
 describe('validateRegistration', () => {
@@ -22,8 +21,15 @@ describe('validateRegistration', () => {
   it('flags every required field on an empty form', () => {
     const errors = validateRegistration(initialValues);
     expect(Object.keys(errors)).toEqual(
-      expect.arrayContaining(['name', 'dob', 'whatsappNumber', 'email', 'gender', 'howDidYouKnow', 'collegeOrWorking'])
+      expect.arrayContaining(['name', 'dob', 'whatsappNumber', 'email', 'gender', 'collegeOrWorking'])
     );
+  });
+
+  it('requires the student ID card for students only', () => {
+    expect(validateRegistration(valid, { hasIdCard: false }).studentIdCard).toMatch(/student ID/i);
+    expect(validateRegistration(valid, { hasIdCard: true })).toEqual({});
+    const worker = { ...valid, collegeOrWorking: 'Working', companyName: 'TCS', college: '', course: '', year: '' };
+    expect(validateRegistration(worker, { hasIdCard: false })).toEqual({});
   });
 
   it('requires a company for working professionals but not course/year', () => {

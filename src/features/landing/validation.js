@@ -12,13 +12,12 @@ export const initialValues = {
   course: '',
   year: '',
   dob: '',
-  howDidYouKnow: '',
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Returns `{ field: message }`; an empty object means the form is valid. */
-export function validateRegistration(values) {
+export function validateRegistration(values, { hasIdCard = true } = {}) {
   const e = {};
   const isCollege = values.collegeOrWorking === 'College';
   const isWorking = values.collegeOrWorking === 'Working';
@@ -33,7 +32,6 @@ export function validateRegistration(values) {
   else if (!EMAIL_RE.test(values.email)) e.email = 'Enter a valid email';
 
   if (!values.gender) e.gender = 'Please select gender';
-  if (!values.howDidYouKnow) e.howDidYouKnow = 'Please select how you came to know about this fest';
   if (!values.collegeOrWorking) e.collegeOrWorking = 'Please select one option';
 
   if (isWorking && !values.companyName.trim()) e.companyName = 'Company name is required';
@@ -42,6 +40,7 @@ export function validateRegistration(values) {
     if (!values.college.trim()) e.college = 'College name is required';
     if (!values.course.trim()) e.course = 'Course is required';
     if (!values.year) e.year = 'Year is required';
+    if (!hasIdCard) e.studentIdCard = 'Please upload your student ID card';
   }
   return e;
 }
@@ -49,7 +48,7 @@ export function validateRegistration(values) {
 /** Field order on screen, used to focus the first invalid field. */
 export const FIELD_ORDER = [
   'name', 'dob', 'whatsappNumber', 'email', 'gender', 'collegeOrWorking',
-  'companyName', 'college', 'course', 'year', 'howDidYouKnow',
+  'companyName', 'college', 'course', 'year', 'studentIdCard',
 ];
 
 /** Fee in rupees for a candidate type in the given (presented) event, or null when not chosen yet. */

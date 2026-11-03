@@ -98,7 +98,7 @@ function SuccessView({ candidate, paymentId }) {
         {event && <InfoRow icon={MapPin} title="Venue">{[event.venue.name, event.venue.address].filter(Boolean).join(', ')}</InfoRow>}
         {isStudent ? (
           <InfoRow icon={IdCard} title="Bring your student ID">
-            Please carry your college ID card to the event. Our team will verify it and send your QR on WhatsApp once approved.
+            Please carry your student ID card to the event. Our team will verify it and send your QR on WhatsApp once approved.
           </InfoRow>
         ) : (
           <InfoRow icon={QrCode} title="At the gate">Show your QR code at the gate for a quick scan.</InfoRow>
