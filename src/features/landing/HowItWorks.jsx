@@ -13,7 +13,7 @@ const STEPS = [
   {
     icon: QrCode,
     title: 'Get your QR pass',
-    text: 'Your pass arrives on WhatsApp. You can also open it any time on this site with your WhatsApp number.',
+    text: 'Your pass is sent to the WhatsApp number you registered with. Students receive it once their ID is verified.',
   },
   {
     icon: ScanLine,

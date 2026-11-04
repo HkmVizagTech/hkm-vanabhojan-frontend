@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Button, Container, Flex, Heading, HStack, Image, Link, SimpleGrid, Stack, Text } from '@chakra-ui/react';
-import { CalendarDays, Mail, MapPin, QrCode } from 'lucide-react';
-import { Link as RouterLink } from 'react-router-dom';
+import { CalendarDays, Mail, MapPin } from 'lucide-react';
 import { EVENT, MAHAMANTRA } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import Reveal from '../common/Reveal';
@@ -47,7 +46,6 @@ export default function SiteFooter() {
             <FooterLink as="button" type="button" textAlign="left" onClick={() => scrollTo('highlights')}>Highlights</FooterLink>
             <FooterLink as="button" type="button" textAlign="left" onClick={() => scrollTo('how')}>How it works</FooterLink>
             <FooterLink as="button" type="button" textAlign="left" onClick={() => scrollTo('faq')}>FAQ</FooterLink>
-            <FooterLink as={RouterLink} to="/attendance"><HStack as="span" spacing={2}><QrCode size={14} /><span>View my QR</span></HStack></FooterLink>
           </Stack>
 
           <Stack spacing={3}>
