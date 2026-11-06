@@ -23,6 +23,7 @@ import DataTable from '../DataTable';
 import { FilterBar, InputFilter, SelectFilter } from '../FilterBar';
 import { candidateColumns } from './candidateColumns';
 import CandidateDetailModal from './CandidateDetailModal';
+import RazorpayCheck from './RazorpayCheck';
 import { useCandidateActions } from './useCandidateActions';
 import { awaitingApproval, matchesApproval } from './needsApproval';
 import { ACTION_COPY, PAYMENT_COLORS, PAYMENT_STATUSES } from './constants';
@@ -158,6 +159,7 @@ export default function CandidatesPage() {
     <Box>
       <PageHeader title="Candidate List" subtitle="Registrations, payments and approvals">
         <EventSwitcher />
+        <RazorpayCheck eventId={eventId} />
         <Button variant="outline" leftIcon={<Clock size={16} />} onClick={() => navigate('/admin/attendance')}>
           Go to Attendance
         </Button>

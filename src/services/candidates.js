@@ -11,6 +11,12 @@ export const candidatesApi = {
   /** Sends the entry QR to the person's WhatsApp. */
   sendQr: candidateId => http.post(`/users/admin/send-qr/${candidateId}`).then(r => r.data),
 
+  /** Dashboard totals against what Razorpay holds, plus every registration that disagrees. */
+  auditPayments: event => http.get('/users/admin/payments-audit', { params: event ? { event } : {} }).then(r => r.data),
+
+  /** Asks Razorpay about registrations still Pending and settles the ones it has captured. */
+  checkPending: () => http.post('/users/check-pending-payments').then(r => r.data),
+
   /** action: 'accept' | 'reject' | 'refund' */
   act: (action, candidateId) =>
     http.post(`/users/admin/${action}/${candidateId}`).then(r => r.data),
