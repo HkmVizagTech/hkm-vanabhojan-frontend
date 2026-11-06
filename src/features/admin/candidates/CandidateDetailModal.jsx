@@ -6,6 +6,8 @@ import {
 import { AlertTriangle, CalendarDays, Check, CheckCircle2, Eye, Mail, Phone, RotateCcw, X } from 'lucide-react';
 import { formatDate, formatDateTime, formatINR } from '../../../utils/format';
 import { ADMIN_ACTION_COLORS, PAYMENT_COLORS } from './constants';
+import { needsApproval } from './needsApproval';
+import QrSection from './QrSection';
 
 const Stat = ({ icon, color, label, children }) => (
   <Box bg="bg.subtle" p={4} borderRadius="lg" borderWidth="1px" borderColor="border.soft">
@@ -30,6 +32,10 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
   if (!candidate) return null;
   const c = candidate;
   const isCollege = c.collegeOrWorking === 'College';
+  const isPaid = c.paymentStatus === 'Paid';
+  // Accept / Reject is only for a student whose ID photo is still to be checked; refunds only for online payments.
+  const canDecide = isPaid && needsApproval(c) && !c.adminAction;
+  const canRefund = isPaid && c.paymentMethod !== 'Cash';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside">
@@ -74,7 +80,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
                     <HStack><Icon as={Phone} color="green.500" /><Text fontSize="sm" fontWeight="medium">{c.whatsappNumber}</Text></HStack>
                     <Pair label="Gender:"><Tag size="sm" colorScheme="purple">{c.gender}</Tag></Pair>
                     <Pair label="DOB:">{formatDate(c.dob) || 'N/A'}</Pair>
-                    <Pair label="Source:"><Tag size="sm" colorScheme="teal" variant="outline">{c.howDidYouKnow || 'Not specified'}</Tag></Pair>
+                    {c.howDidYouKnow && <Pair label="Source:"><Tag size="sm" colorScheme="teal" variant="outline">{c.howDidYouKnow}</Tag></Pair>}
                   </VStack>
                 </GridItem>
                 <GridItem>
@@ -118,6 +124,9 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
             )}
 
             <Divider />
+            <QrSection candidate={c} />
+
+            <Divider />
             <Box>
               <Heading size="md" mb={4}>Registration Details</Heading>
               <Grid templateColumns="repeat(auto-fit, minmax(190px, 1fr))" gap={4}>
@@ -134,7 +143,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
                 <GridItem>
                   <Text fontSize="sm" color="text.muted">Admin Action</Text>
                   <Tag size="sm" variant={c.adminAction ? 'solid' : 'outline'} colorScheme={ADMIN_ACTION_COLORS[c.adminAction] || 'gray'}>
-                    {c.adminAction || 'Pending'}
+                    {c.adminAction || (needsApproval(c) ? 'Pending' : 'Not needed')}
                   </Tag>
                   {c.adminActionDate && <Text fontSize="xs" color="text.muted" mt={1}>{formatDateTime(c.adminActionDate)}</Text>}
                 </GridItem>
@@ -145,9 +154,15 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
 
         <ModalFooter bg="bg.subtle" p={4}>
           <Wrap spacing={3} justify="center" w="full">
-            <WrapItem><Button colorScheme="green" leftIcon={<Check size={16} />} onClick={() => onAction('accept', c._id)} isLoading={busy}>Accept</Button></WrapItem>
-            <WrapItem><Button colorScheme="red" leftIcon={<X size={16} />} onClick={() => onAction('reject', c._id)} isLoading={busy}>Reject</Button></WrapItem>
-            <WrapItem><Button colorScheme="orange" leftIcon={<RotateCcw size={16} />} onClick={() => onAction('refund', c._id)} isLoading={busy}>Refund</Button></WrapItem>
+            {canDecide && (
+              <>
+                <WrapItem><Button colorScheme="green" leftIcon={<Check size={16} />} onClick={() => onAction('accept', c._id)} isLoading={busy}>Accept</Button></WrapItem>
+                <WrapItem><Button colorScheme="red" leftIcon={<X size={16} />} onClick={() => onAction('reject', c._id)} isLoading={busy}>Reject</Button></WrapItem>
+              </>
+            )}
+            {canRefund && (
+              <WrapItem><Button colorScheme="orange" leftIcon={<RotateCcw size={16} />} onClick={() => onAction('refund', c._id)} isLoading={busy}>Refund</Button></WrapItem>
+            )}
             <WrapItem><Button variant="ghost" onClick={onClose}>Close</Button></WrapItem>
           </Wrap>
         </ModalFooter>

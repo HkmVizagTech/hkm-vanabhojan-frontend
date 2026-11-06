@@ -24,6 +24,7 @@ import { FilterBar, InputFilter, SelectFilter } from '../FilterBar';
 import { candidateColumns } from './candidateColumns';
 import CandidateDetailModal from './CandidateDetailModal';
 import { useCandidateActions } from './useCandidateActions';
+import { awaitingApproval, matchesApproval } from './needsApproval';
 import { ACTION_COPY, PAYMENT_COLORS, PAYMENT_STATUSES } from './constants';
 
 const PAGE_SIZE = 50;
@@ -53,6 +54,13 @@ const toExcelRow = row => ({
   'Receipt No': row.receipt,
 });
 
+const TYPE_OPTIONS = [{ value: 'College', label: 'Students' }, { value: 'Working', label: 'Working' }];
+const APPROVAL_OPTIONS = [
+  { value: 'verify', label: 'To verify' },
+  { value: 'Accepted', label: 'Accepted' },
+  { value: 'Rejected', label: 'Rejected' },
+];
+
 export default function CandidatesPage() {
   const navigate = useNavigate();
   const { selected: eventId, loaded, events } = useAdminEvent();
@@ -62,7 +70,7 @@ export default function CandidatesPage() {
     [eventId, loaded]
   );
   const eventName = events.find(e => e._id === eventId)?.name;
-  const [filters, setFilters] = useState({ college: '', payment: '', start: '', end: '', search: '' });
+  const [filters, setFilters] = useState({ college: '', type: '', approval: '', payment: '', start: '', end: '', search: '' });
   const [selectedId, setSelectedId] = useState(null);
   const { isOpen: isDetailOpen, onOpen: openDetail, onClose: closeDetail } = useDisclosure();
   const search = useDebouncedValue(filters.search);
@@ -84,10 +92,12 @@ export default function CandidatesPage() {
       data.filter(
         c =>
           (!filters.college || c.college === filters.college) &&
+          (!filters.type || c.collegeOrWorking === filters.type) &&
+          matchesApproval(c, filters.approval) &&
           inDateRange(c.registrationDate, filters.start, filters.end) &&
           matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.companyName], search)
       ),
-    [data, filters.college, filters.start, filters.end, search]
+    [data, filters.college, filters.type, filters.approval, filters.start, filters.end, search]
   );
   const filtered = useMemo(
     () => (filters.payment ? baseFiltered.filter(c => c.paymentStatus === filters.payment) : baseFiltered),
@@ -101,7 +111,7 @@ export default function CandidatesPage() {
       paid: paid.length,
       revenue: paid.reduce((sum, c) => sum + (Number(c.paymentAmount) || 0), 0),
       attended: data.filter(c => c.attendance).length,
-      awaiting: paid.filter(c => !c.adminAction).length,
+      awaiting: data.filter(awaitingApproval).length,
     };
   }, [data]);
 
@@ -155,11 +165,13 @@ export default function CandidatesPage() {
           <StatCard label="Paid" value={overview.paid} icon={CheckCheck} color="green" />
           <StatCard label="Revenue" value={overview.revenue} icon={IndianRupee} color="saffron" format={n => formatINR(n)} />
           <StatCard label="Attended" value={overview.attended} icon={UserCheck} color="lotus" hint={overview.paid ? `${Math.round((overview.attended / overview.paid) * 100)}% of paid` : undefined} />
-          <StatCard label="Awaiting action" value={overview.awaiting} icon={Clock} color="orange" hint="Paid, not yet accepted/rejected" />
+          <StatCard label="Awaiting action" value={overview.awaiting} icon={Clock} color="orange" hint="Student IDs to verify" />
         </SimpleGrid>
       </Reveal>
 
-      <FilterBar columns={{ base: 1, sm: 2, lg: 4 }}>
+      <FilterBar columns={{ base: 1, sm: 2, lg: 3, xl: 6 }}>
+        <SelectFilter label="Type" placeholder="All types" value={filters.type} onChange={setFilter('type')} options={TYPE_OPTIONS} />
+        <SelectFilter label="Student ID" placeholder="Any" value={filters.approval} onChange={setFilter('approval')} options={APPROVAL_OPTIONS} />
         <SelectFilter label="College" placeholder="All colleges" value={filters.college} onChange={setFilter('college')} options={colleges} />
         <InputFilter label="From" type="date" value={filters.start} onChange={setFilter('start')} />
         <InputFilter label="To" type="date" value={filters.end} onChange={setFilter('end')} />

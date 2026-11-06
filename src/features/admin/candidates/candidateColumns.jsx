@@ -4,6 +4,8 @@ import { AlertTriangle, CheckCircle2, Phone } from 'lucide-react';
 import { formatDate } from '../../../utils/format';
 import { ADMIN_ACTION_COLORS, PAYMENT_COLORS } from './constants';
 
+import { needsApproval } from './needsApproval';
+
 const openInNewTab = url => e => {
   e.stopPropagation();
   window.open(url, '_blank', 'noopener');
@@ -121,7 +123,7 @@ export const candidateColumns = [
       c.adminAction ? (
         <Tag size="sm" variant="solid" colorScheme={ADMIN_ACTION_COLORS[c.adminAction] || 'gray'}>{c.adminAction}</Tag>
       ) : (
-        <Tag size="sm" variant="outline" colorScheme="gray">Pending</Tag>
+        <Tag size="sm" variant="outline" colorScheme="gray">{needsApproval(c) ? 'Pending' : 'Not needed'}</Tag>
       ),
   },
 ];
