@@ -104,26 +104,35 @@ export default function CandidatesPage() {
     [baseFiltered, filters.payment]
   );
 
+  // The cards follow the filters: pick Students or Working (or a college, dates, a status) and the totals change with them.
   const overview = useMemo(() => {
-    const paid = data.filter(c => c.paymentStatus === 'Paid');
+    const paid = filtered.filter(c => c.paymentStatus === 'Paid');
+    const sumOf = type => paid.filter(c => c.collegeOrWorking === type).reduce((sum, c) => sum + (Number(c.paymentAmount) || 0), 0);
     return {
-      total: data.length,
+      total: filtered.length,
       paid: paid.length,
       revenue: paid.reduce((sum, c) => sum + (Number(c.paymentAmount) || 0), 0),
-      attended: data.filter(c => c.attendance).length,
-      awaiting: data.filter(awaitingApproval).length,
+      students: sumOf('College'),
+      working: sumOf('Working'),
+      attended: filtered.filter(c => c.attendance).length,
+      awaiting: filtered.filter(awaitingApproval).length,
     };
-  }, [data]);
+  }, [filtered]);
 
+  // Each status pill shows how many people and how much money: success (Paid), Pending, Failed and Refunded.
   const chips = useMemo(
     () => [
       { value: '', label: 'All', count: baseFiltered.length, color: 'brand' },
-      ...PAYMENT_STATUSES.map(s => ({
-        value: s,
-        label: s,
-        count: baseFiltered.filter(c => c.paymentStatus === s).length,
-        color: PAYMENT_COLORS[s],
-      })),
+      ...PAYMENT_STATUSES.map(s => {
+        const rows = baseFiltered.filter(c => c.paymentStatus === s);
+        return {
+          value: s,
+          label: s,
+          count: rows.length,
+          amount: formatINR(rows.reduce((sum, c) => sum + (Number(c.paymentAmount) || 0), 0)),
+          color: PAYMENT_COLORS[s],
+        };
+      }),
     ],
     [baseFiltered]
   );
@@ -163,7 +172,7 @@ export default function CandidatesPage() {
         <SimpleGrid columns={{ base: 2, lg: 5 }} spacing={3}>
           <StatCard label="Registrations" value={overview.total} icon={Users} />
           <StatCard label="Paid" value={overview.paid} icon={CheckCheck} color="green" />
-          <StatCard label="Revenue" value={overview.revenue} icon={IndianRupee} color="saffron" format={n => formatINR(n)} />
+          <StatCard label="Revenue" value={overview.revenue} icon={IndianRupee} color="saffron" format={n => formatINR(n)} hint={filters.type ? `${overview.paid} paid` : `Students ${formatINR(overview.students)} · Working ${formatINR(overview.working)}`} />
           <StatCard label="Attended" value={overview.attended} icon={UserCheck} color="lotus" hint={overview.paid ? `${Math.round((overview.attended / overview.paid) * 100)}% of paid` : undefined} />
           <StatCard label="Awaiting action" value={overview.awaiting} icon={Clock} color="orange" hint="Student IDs to verify" />
         </SimpleGrid>

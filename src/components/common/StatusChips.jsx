@@ -3,7 +3,7 @@ import { HStack, Text } from '@chakra-ui/react';
 
 /**
  * Clickable filter pills with live counts, e.g. All 120 | Paid 98 | Pending 12.
- * options: [{ value, label, count, color }]
+ * options: [{ value, label, count, color, amount? }]; `amount` is an optional pre-formatted rupee total shown next to the count.
  */
 export default function StatusChips({ options, value, onChange }) {
   return (
@@ -41,6 +41,7 @@ export default function StatusChips({ options, value, onChange }) {
             >
               {o.count}
             </Text>
+            {o.amount && <Text as="span" fontSize="xs" fontWeight="semibold" opacity={active ? 0.95 : 0.75}>{o.amount}</Text>}
           </HStack>
         );
       })}
