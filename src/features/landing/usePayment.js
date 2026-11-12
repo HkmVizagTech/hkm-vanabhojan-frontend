@@ -74,7 +74,9 @@ export function usePayment() {
         });
         checkout.open();
       } catch (err) {
-        notifyError('Payment failed', getErrorMessage(err));
+        // 409 means this person has already paid: say so, instead of a generic "Payment failed".
+        const already = err?.response?.status === 409 && /already registered/i.test(getErrorMessage(err));
+        notifyError(already ? 'Already registered' : 'Payment failed', getErrorMessage(err));
         setIsPaying(false);
       }
     },

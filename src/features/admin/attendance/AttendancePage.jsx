@@ -20,6 +20,7 @@ import { FilterBar, InputFilter, SelectFilter } from '../FilterBar';
 
 const PAGE_SIZE = 50;
 
+const isAttendee = c => c.paymentStatus === 'Paid';
 const hasAttended = c => Boolean(c.adminAttendance || c.attendance);
 const attendedAt = c => c.adminAttendanceDate || c.attendanceDate;
 
@@ -85,7 +86,9 @@ const toExcelRow = (row, idx) => ({
 export default function AttendancePage() {
   const { selected, loaded } = useAdminEvent();
   const { data, loading, error, reload } = useAsyncData(
-    async signal => (loaded ? (await candidatesApi.list(selected, signal)).slice().sort(byPhoneThenName) : []),
+    // Only paid registrations are attendees. Pending and Failed rows are payment attempts (one person can have several),
+    // and Refunded ones are no longer coming, so none of them belong in an attendance list.
+    async signal => (loaded ? (await candidatesApi.list(selected, signal)).filter(isAttendee).sort(byPhoneThenName) : []),
     [],
     [selected, loaded]
   );
@@ -125,7 +128,7 @@ export default function AttendancePage() {
 
   return (
     <Box>
-      <PageHeader title="All Registrations & Attendance" subtitle="Family members share a WhatsApp number and are grouped together">
+      <PageHeader title="All Registrations & Attendance" subtitle="Paid registrations only. Family members share a WhatsApp number and are grouped together">
         <EventSwitcher />
         <Button leftIcon={<Download size={16} />} onClick={() => exportToExcel({ rows: filtered.map(toExcelRow), sheetName: 'All Registrations', fileName: 'all-registrations-attendance.xlsx' })} isDisabled={filtered.length === 0}>
           Export to Excel
