@@ -6,6 +6,17 @@ export const ordinalYear = year => {
 };
 
 export const formatDate = value => (value ? new Date(value).toLocaleDateString() : '');
+const IST = { timeZone: 'Asia/Kolkata' };
+
+/** "12 Nov 2026" in Indian time, whatever the viewer's own timezone is. */
+export const formatDateIST = value => (value ? new Date(value).toLocaleDateString('en-IN', { ...IST, day: 'numeric', month: 'short', year: 'numeric' }) : '');
+
+/** "5:49 pm" in Indian time. */
+export const formatTimeIST = value => (value ? new Date(value).toLocaleTimeString('en-IN', { ...IST, hour: 'numeric', minute: '2-digit', hour12: true }) : '');
+
+/** "12 Nov 2026, 5:49 pm" in Indian time. */
+export const formatDateTimeIST = value => (value ? `${formatDateIST(value)}, ${formatTimeIST(value)}` : '');
+
 export const formatDateTime = value => (value ? new Date(value).toLocaleString() : '');
 
 export const onlyDigits = value => String(value ?? '').replace(/\D/g, '');

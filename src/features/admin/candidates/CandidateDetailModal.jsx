@@ -4,7 +4,7 @@ import {
   ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tag, Text, VStack, Wrap, WrapItem,
 } from '@chakra-ui/react';
 import { AlertTriangle, CalendarDays, Check, CheckCircle2, Eye, Mail, Phone, RotateCcw, X } from 'lucide-react';
-import { formatDate, formatDateTime, formatINR } from '../../../utils/format';
+import { formatDate, formatDateTime, formatDateTimeIST, formatINR } from '../../../utils/format';
 import { ADMIN_ACTION_COLORS, PAYMENT_COLORS } from './constants';
 import { needsApproval } from './needsApproval';
 import QrSection from './QrSection';
@@ -64,7 +64,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
                   {c.paymentAmount ? formatINR(c.paymentAmount) : 'N/A'}
                 </Stat>
                 <Stat icon={Eye} color="blue.500" label="Order ID">{c.orderId || 'N/A'}</Stat>
-                <Stat icon={CalendarDays} color="purple.500" label="Payment Date">{formatDate(c.paymentDate) || 'N/A'}</Stat>
+                <Stat icon={CalendarDays} color="purple.500" label="Payment Date">{formatDateTimeIST(c.paymentDate) || 'N/A'}</Stat>
                 <Stat label="Method">{c.paymentMethod || 'N/A'}</Stat>
               </Grid>
             </Box>
@@ -130,7 +130,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
             <Box>
               <Heading size="md" mb={4}>Registration Details</Heading>
               <Grid templateColumns="repeat(auto-fit, minmax(190px, 1fr))" gap={4}>
-                <GridItem><Text fontSize="sm" color="text.muted">Registration Date</Text><Text fontSize="sm" fontWeight="medium">{formatDate(c.registrationDate) || 'N/A'}</Text></GridItem>
+                <GridItem><Text fontSize="sm" color="text.muted">Registration Date</Text><Text fontSize="sm" fontWeight="medium">{formatDateTimeIST(c.registrationDate) || 'N/A'}</Text></GridItem>
                 <GridItem><Text fontSize="sm" color="text.muted">Serial Number</Text><Text fontSize="sm" fontWeight="medium">{c.serialNo || 'N/A'}</Text></GridItem>
                 <GridItem>
                   <Text fontSize="sm" color="text.muted">Attendance</Text>

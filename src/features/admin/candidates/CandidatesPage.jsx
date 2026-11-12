@@ -8,7 +8,7 @@ import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { usePagination } from '../../../hooks/usePagination';
 import { exportToExcel } from '../../../utils/exportExcel';
 import { inDateRange, matchesSearch, uniqueSorted } from '../../../utils/filters';
-import { formatDateTime, formatINR } from '../../../utils/format';
+import { formatDateTime, formatDateTimeIST, formatINR } from '../../../utils/format';
 import PageSpinner from '../../../components/common/PageSpinner';
 import ErrorNotice from '../../../components/common/ErrorNotice';
 import Pagination from '../../../components/common/Pagination';
@@ -47,7 +47,7 @@ const toExcelRow = row => ({
   'Payment Status': row.paymentStatus,
   'Payment Method': row.paymentMethod,
   'How Found': row.howDidYouKnow || 'Not specified',
-  'Registration Date': formatDateTime(row.registrationDate),
+  'Registration Date': formatDateTimeIST(row.registrationDate),
   'Student ID Card URL': row.studentIdCardUrl || 'N/A',
   Attendance: row.attendance ? 'Yes' : 'No',
   'Admin Action': row.adminAction || 'Pending',

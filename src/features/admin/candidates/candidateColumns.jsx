@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, chakra, HStack, Image, Tag, Text, Tooltip, VStack } from '@chakra-ui/react';
 import { AlertTriangle, CheckCircle2, Phone } from 'lucide-react';
-import { formatDate } from '../../../utils/format';
+import { formatDateIST, formatTimeIST } from '../../../utils/format';
 import { ADMIN_ACTION_COLORS, PAYMENT_COLORS } from './constants';
 
 import { needsApproval } from './needsApproval';
@@ -89,7 +89,17 @@ export const candidateColumns = [
   { key: 'course', header: 'Course', render: c => c.course || '-' },
   { key: 'year', header: 'Year', render: c => c.year || '-' },
   { key: 'idcard', header: 'ID Card', render: c => <IdCardCell candidate={c} /> },
-  { key: 'reg', header: 'Reg Date', render: c => formatDate(c.registrationDate) || 'N/A' },
+  {
+    key: 'reg',
+    header: 'Registered',
+    render: c =>
+      c.registrationDate ? (
+        <Box lineHeight="1.3">
+          <Text fontSize="sm">{formatDateIST(c.registrationDate)}</Text>
+          <Text fontSize="xs" color="text.muted">{formatTimeIST(c.registrationDate)}</Text>
+        </Box>
+      ) : 'N/A',
+  },
   {
     key: 'payment',
     header: 'Payment',
