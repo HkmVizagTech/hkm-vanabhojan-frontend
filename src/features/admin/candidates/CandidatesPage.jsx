@@ -30,8 +30,8 @@ import { ACTION_COPY, PAYMENT_COLORS, PAYMENT_STATUSES } from './constants';
 
 const PAGE_SIZE = 50;
 
-const toExcelRow = row => ({
-  'S.No': row.serialNo,
+const toExcelRow = (row, index) => ({
+  'S.No': index + 1,
   Name: row.name,
   Gender: row.gender,
   Email: row.email,
