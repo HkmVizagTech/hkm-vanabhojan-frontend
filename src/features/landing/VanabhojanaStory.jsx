@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Container, Flex, HStack, Icon, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { Leaf } from 'lucide-react';
 import { VANABHOJANA } from '../../config/vanabhojana';
-import Figure from '../../components/three/Figure';
+import MealScene from '../../components/scene/MealScene';
 import Reveal from '../../components/common/Reveal';
 import SectionHeading from '../../components/common/SectionHeading';
 
@@ -28,11 +28,10 @@ export default function VanabhojanaStory() {
           borderRadius="2xl"
           overflow="hidden"
           borderWidth="1px"
-          bgGradient="linear(to-b, #a9d0c6, #efe6c0 62%, #c9dca7)"
           boxShadow="0 24px 48px -26px rgba(0,0,0,0.6)"
           borderColor="whiteAlpha.200"
         >
-          <Figure name="picnic" label="Krishna and the cowherd boys sharing lunch in the forest" h={{ base: '300px', md: '420px' }} />
+          <MealScene label="Krishna and the cowherd boys sharing a meal in the forest" />
         </Box>
         <VStack flex="1" align="flex-start" spacing={5}>
           <Reveal>
