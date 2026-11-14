@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Button, SimpleGrid, Text, useDisclosure } from '@chakra-ui/react';
 import { CheckCheck, Clock, Download, IndianRupee, UserCheck, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -82,7 +82,10 @@ export default function CandidatesPage() {
     (id, patch) => setData(prev => prev.map(c => (c._id === id ? { ...c, ...patch } : c))),
     [setData]
   );
-  const actions = useCandidateActions({ onUpdated: handleUpdated });
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  const getCandidate = useCallback(id => dataRef.current.find(c => c._id === id), []);
+  const actions = useCandidateActions({ onUpdated: handleUpdated, getCandidate });
 
   const selected = useMemo(() => data.find(c => c._id === selectedId) || null, [data, selectedId]);
   const colleges = useMemo(() => uniqueSorted(data.map(c => c.college)), [data]);

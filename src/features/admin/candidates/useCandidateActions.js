@@ -4,8 +4,19 @@ import { candidatesApi } from '../../../services/candidates';
 import { getErrorMessage } from '../../../services/http';
 import { ACTION_COPY } from './constants';
 
-/** Accept / reject / refund flow: ask for confirmation, call the API, patch the cached row. */
-export function useCandidateActions({ onUpdated }) {
+// What the row will look like once the server agrees. Applied at once so the admin never waits for WhatsApp / Razorpay.
+const expectedPatch = action => {
+  const now = new Date().toISOString();
+  if (action === 'accept') return { adminAction: 'Accepted', adminActionDate: now };
+  if (action === 'reject') return { adminAction: 'Rejected', adminActionDate: now };
+  return { adminAction: 'Refunded', adminActionDate: now, paymentStatus: 'Refunded' };
+};
+
+/**
+ * Accept / reject / refund flow: ask for confirmation, show the result straight away (optimistic), call the API in the
+ * background, then replace the guess with the server's row, or put the old values back if the call failed.
+ */
+export function useCandidateActions({ onUpdated, getCandidate }) {
   const toast = useToast();
   const [pending, setPending] = useState(null); // { action, candidateId }
   const [busyId, setBusyId] = useState(null);
@@ -17,6 +28,11 @@ export function useCandidateActions({ onUpdated }) {
     if (!pending) return;
     const { action, candidateId } = pending;
     setBusyId(candidateId);
+    const guess = expectedPatch(action);
+    const before = getCandidate?.(candidateId);
+    const undo = before ? Object.fromEntries(Object.keys(guess).map(key => [key, before[key]])) : null;
+    if (undo) onUpdated(candidateId, guess);
+    setPending(null); // close the confirmation now; the popup already shows the new state
     try {
       const result = await candidatesApi.act(action, candidateId);
       onUpdated(candidateId, result.data);
@@ -30,6 +46,7 @@ export function useCandidateActions({ onUpdated }) {
         isClosable: true,
       });
     } catch (error) {
+      if (undo) onUpdated(candidateId, undo);
       toast({
         title: `Failed to ${action} candidate`,
         description: getErrorMessage(error),
@@ -39,9 +56,8 @@ export function useCandidateActions({ onUpdated }) {
       });
     } finally {
       setBusyId(null);
-      setPending(null);
     }
-  }, [pending, onUpdated, toast]);
+  }, [pending, onUpdated, getCandidate, toast]);
 
   return { pending, busyId, request, cancel, confirm };
 }
