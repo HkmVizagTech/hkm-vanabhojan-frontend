@@ -7,6 +7,7 @@ import { gsap, useGSAP } from '../../lib/gsap';
 import { useCountdown } from '../../hooks/useCountdown';
 import { formatINR } from '../../utils/format';
 import logo from '../../assets/logo.svg';
+import { forest } from '../../components/scene/assets';
 
 // Deterministic pseudo-random so the skyline is identical on every render.
 const rng = seed => () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
@@ -120,7 +121,9 @@ export default function Hero({ onRegister }) {
       overflow="hidden"
       color="white"
       bg="#0a1511"
-      bgImage="radial-gradient(ellipse 55% 60% at 50% 40%, rgba(201,162,74,0.16), transparent 70%), radial-gradient(ellipse 80% 50% at 10% 110%, rgba(31,90,61,0.45), transparent 70%)"
+      bgImage={`radial-gradient(ellipse 55% 55% at 50% 38%, rgba(10,21,17,0.55), transparent 80%), linear-gradient(180deg, rgba(10,21,17,0.80) 0%, rgba(10,21,17,0.74) 55%, rgba(10,21,17,0.94) 100%), url(${forest})`}
+      bgSize="cover"
+      bgPosition="center bottom"
       pt={{ base: '110px', md: '150px' }}
       pb={{ base: 28, md: 44 }}
     >
