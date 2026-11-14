@@ -132,31 +132,37 @@ export default function Hero({ onRegister }) {
         <Flex justify="center">
           <VStack align="center" spacing={{ base: 4, md: 6 }} textAlign="center" maxW="3xl">
             {event ? (
-              <HStack
+              <Flex
                 className="hero-pill"
-                spacing={2}
-                px={4}
-                py={2}
-                borderRadius="full"
+                direction={{ base: 'column', md: 'row' }}
+                align="center"
+                justify="center"
+                columnGap={3}
+                rowGap={1.5}
+                px={{ base: 5, md: 4 }}
+                py={{ base: 3, md: 2 }}
+                borderRadius={{ base: '2xl', md: 'full' }}
                 bg="whiteAlpha.100"
                 borderWidth="1px"
                 borderColor="whiteAlpha.300"
                 fontSize="sm"
                 fontWeight="medium"
                 color="whiteAlpha.900"
-                flexWrap="wrap"
-                justify="center"
               >
-                <CalendarDays size={16} />
-                <Text>{event.dateLabel}</Text>
+                <HStack spacing={2}>
+                  <CalendarDays size={16} />
+                  <Text>{event.dateLabel}</Text>
+                </HStack>
                 {event.venue.short && (
                   <>
-                    <Text opacity={0.4}>·</Text>
-                    <MapPin size={16} />
-                    <Text>{event.venue.short}</Text>
+                    <Text display={{ base: 'none', md: 'block' }} opacity={0.4}>·</Text>
+                    <HStack spacing={2}>
+                      <MapPin size={16} />
+                      <Text>{event.venue.short}</Text>
+                    </HStack>
                   </>
                 )}
-              </HStack>
+              </Flex>
             ) : (
               <HStack className="hero-pill" spacing={2} px={4} py={2} borderRadius="full" bg="whiteAlpha.100" fontSize="sm" fontWeight="medium" color="whiteAlpha.900">
                 <Sparkles size={16} />
@@ -213,12 +219,15 @@ export default function Hero({ onRegister }) {
               </Text>
             )}
 
-            <HStack className="hero-sub" spacing={3} pt={1}>
+            <Flex className="hero-sub" direction={{ base: 'column', md: 'row' }} align="center" gap={{ base: 2, md: 3 }} pt={1} textAlign="center">
               <Image src={logo} alt="" boxSize="34px" borderRadius="full" />
-              <Text fontSize="sm" color="whiteAlpha.700" textAlign="left">
-                Organised by <Text as="span" fontWeight="semibold" color="white">{EVENT.organiser}</Text>
+              <Text fontSize="sm" color="whiteAlpha.700">
+                Organised by
+                <Text as="span" display={{ base: 'block', md: 'inline' }} ml={{ md: 1 }} fontWeight="semibold" color="white">
+                  {EVENT.organiser}
+                </Text>
               </Text>
-            </HStack>
+            </Flex>
           </VStack>
 
         </Flex>
