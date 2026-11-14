@@ -67,7 +67,7 @@ export const theme = extendTheme({
   styles: {
     global: {
       '@keyframes firefly': { '0%, 100%': { opacity: 0.1, transform: 'translateY(0)' }, '50%': { opacity: 1, transform: 'translateY(-10px)' } },
-      '@keyframes kcMeal': { '0%, 100%': { transform: 'translateX(-50%) scale(1)' }, '50%': { transform: 'translateX(-50%) scale(1.015) translateY(-4px)' } },
+      '@keyframes kcDrift': { from: { transform: 'scale(1) translate(0, 0)' }, to: { transform: 'scale(1.06) translate(-1.2%, -1%)' } },
       '@keyframes kcRays': { '0%, 100%': { opacity: 0.35, transform: 'translateX(-6%)' }, '50%': { opacity: 1, transform: 'translateX(6%)' } },
       '@keyframes heroSheen': { from: { backgroundPosition: '100% 0' }, to: { backgroundPosition: '0% 0' } },
       body: { bg: 'bg.page', color: 'gray.800', _dark: { color: 'gray.100' }, WebkitFontSmoothing: 'antialiased' },

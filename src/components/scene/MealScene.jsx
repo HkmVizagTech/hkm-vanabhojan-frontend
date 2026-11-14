@@ -1,51 +1,38 @@
 import React from 'react';
 import { Box, Image } from '@chakra-ui/react';
-import { forest, meal } from './assets';
+import { meal } from './assets';
 
 const SPARKS = [
-  { left: '12%', top: '18%', delay: '0s' },
-  { left: '30%', top: '9%', delay: '1.4s' },
-  { left: '58%', top: '14%', delay: '0.7s' },
-  { left: '78%', top: '22%', delay: '2.2s' },
-  { left: '90%', top: '10%', delay: '3s' },
-  { left: '48%', top: '30%', delay: '2.6s' },
+  { left: '14%', top: '16%', delay: '0s' },
+  { left: '34%', top: '9%', delay: '1.4s' },
+  { left: '62%', top: '12%', delay: '0.7s' },
+  { left: '80%', top: '24%', delay: '2.2s' },
+  { left: '91%', top: '8%', delay: '3s' },
+  { left: '50%', top: '30%', delay: '2.6s' },
 ];
 
-/** Krishna and his friends sharing the forest meal, in a sunlit clearing with drifting light and fireflies. */
-export default function MealScene({ label, h = { base: '320px', md: '440px' } }) {
+/** Krishna and his friends sharing the forest meal: one painting, with light slowly drifting over it and fireflies. */
+export default function MealScene({ label }) {
   return (
-    <Box
-      role="img"
-      aria-label={label}
-      position="relative"
-      overflow="hidden"
-      h={h}
-      w="100%"
-      bgColor="#0e2a1d"
-      bgImage={`linear-gradient(180deg, rgba(8,22,15,0.10) 0%, rgba(8,22,15,0.62) 100%), url(${forest})`}
-      bgSize="cover"
-      bgPosition="center"
-    >
-      <Box
-        aria-hidden="true"
-        position="absolute"
-        inset={0}
-        pointerEvents="none"
-        bgImage="linear-gradient(115deg, transparent 20%, rgba(255,236,170,0.20) 38%, transparent 52%)"
-        animation="kcRays 8s ease-in-out infinite"
-      />
+    <Box role="img" aria-label={label} position="relative" overflow="hidden" w="100%" sx={{ aspectRatio: '4 / 3' }} bg="#1a2a14">
       <Image
         src={meal}
         alt=""
         draggable={false}
         position="absolute"
-        left="50%"
-        bottom="-2%"
-        h="92%"
-        maxW="104%"
-        objectFit="contain"
-        animation="kcMeal 5.5s ease-in-out infinite"
-        filter="drop-shadow(0 16px 18px rgba(0,0,0,0.4))"
+        inset={0}
+        w="100%"
+        h="100%"
+        objectFit="cover"
+        animation="kcDrift 22s ease-in-out infinite alternate"
+      />
+      <Box
+        aria-hidden="true"
+        position="absolute"
+        inset={0}
+        pointerEvents="none"
+        bgImage="linear-gradient(115deg, transparent 22%, rgba(255,236,170,0.16) 40%, transparent 54%)"
+        animation="kcRays 9s ease-in-out infinite"
       />
       {SPARKS.map((s, i) => (
         <Box
