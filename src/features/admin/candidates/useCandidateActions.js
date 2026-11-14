@@ -13,7 +13,7 @@ const expectedPatch = action => {
 };
 
 /**
- * Accept / reject / refund flow: ask for confirmation, show the result straight away (optimistic), call the API in the
+ * Accept / reject / refund flow: accept and reject run at once, a refund asks first; show the result straight away (optimistic), call the API in the
  * background, then replace the guess with the server's row, or put the old values back if the call failed.
  */
 export function useCandidateActions({ onUpdated, getCandidate }) {
@@ -21,18 +21,14 @@ export function useCandidateActions({ onUpdated, getCandidate }) {
   const [pending, setPending] = useState(null); // { action, candidateId }
   const [busyId, setBusyId] = useState(null);
 
-  const request = useCallback((action, candidateId) => setPending({ action, candidateId }), []);
   const cancel = useCallback(() => setPending(null), []);
 
-  const confirm = useCallback(async () => {
-    if (!pending) return;
-    const { action, candidateId } = pending;
+  const run = useCallback(async (action, candidateId) => {
     setBusyId(candidateId);
     const guess = expectedPatch(action);
     const before = getCandidate?.(candidateId);
     const undo = before ? Object.fromEntries(Object.keys(guess).map(key => [key, before[key]])) : null;
     if (undo) onUpdated(candidateId, guess);
-    setPending(null); // close the confirmation now; the popup already shows the new state
     try {
       const result = await candidatesApi.act(action, candidateId);
       onUpdated(candidateId, result.data);
@@ -57,7 +53,20 @@ export function useCandidateActions({ onUpdated, getCandidate }) {
     } finally {
       setBusyId(null);
     }
-  }, [pending, onUpdated, getCandidate, toast]);
+  }, [onUpdated, getCandidate, toast]);
+
+  // Accept and reject go straight through; only a refund (money back, cannot be undone) asks first.
+  const request = useCallback(
+    (action, candidateId) => (action === 'refund' ? setPending({ action, candidateId }) : run(action, candidateId)),
+    [run]
+  );
+
+  const confirm = useCallback(() => {
+    if (!pending) return;
+    const { action, candidateId } = pending;
+    setPending(null); // close the confirmation now; the API call carries on in the background
+    run(action, candidateId);
+  }, [pending, run]);
 
   return { pending, busyId, request, cancel, confirm };
 }

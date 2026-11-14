@@ -77,6 +77,8 @@ export default function CandidatesPage() {
   const search = useDebouncedValue(filters.search);
 
   const setFilter = name => value => setFilters(prev => ({ ...prev, [name]: value }));
+  // The "Awaiting action" card: show the students still to verify in the table (click again to clear).
+  const toggleVerify = () => setFilters(prev => ({ ...prev, approval: prev.approval === 'verify' ? '' : 'verify', payment: '' }));
 
   const handleUpdated = useCallback(
     (id, patch) => setData(prev => prev.map(c => (c._id === id ? { ...c, ...patch } : c))),
@@ -179,7 +181,15 @@ export default function CandidatesPage() {
           <StatCard label="Paid" value={overview.paid} icon={CheckCheck} color="green" />
           <StatCard label="Revenue" value={overview.revenue} icon={IndianRupee} color="saffron" format={n => formatINR(n)} hint={filters.type ? `${overview.paid} paid` : `Students ${formatINR(overview.students)} · Working ${formatINR(overview.working)}`} />
           <StatCard label="Attended" value={overview.attended} icon={UserCheck} color="lotus" hint={overview.paid ? `${Math.round((overview.attended / overview.paid) * 100)}% of paid` : undefined} />
-          <StatCard label="Awaiting action" value={overview.awaiting} icon={Clock} color="orange" hint="Student IDs to verify" />
+          <StatCard
+            label="Awaiting action"
+            value={overview.awaiting}
+            icon={Clock}
+            color="orange"
+            hint="Student IDs to verify"
+            active={filters.approval === 'verify'}
+            onClick={overview.awaiting > 0 || filters.approval === 'verify' ? toggleVerify : undefined}
+          />
         </SimpleGrid>
       </Reveal>
 
@@ -220,8 +230,7 @@ export default function CandidatesPage() {
         onConfirm={actions.confirm}
         colorScheme={pendingCopy?.colorScheme}
         confirmLabel={`Confirm ${actions.pending?.action ?? ''}`}
-        isLoading={Boolean(actions.busyId)}
-      >
+              >
         {pendingCopy && (
           <>
             Are you sure you want to <strong>{actions.pending.action}</strong> {pendingCopy.target}?

@@ -2,21 +2,29 @@ import React from 'react';
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import CountUp from './CountUp';
 
-/** One headline number with an icon tile. `hint` is small supporting text under it. */
-export default function StatCard({ label, value, icon, color = 'brand', format, hint }) {
+/** One headline number with an icon tile. `hint` is small supporting text under it. Pass `onClick` to make the card a button (`active` marks it selected). */
+export default function StatCard({ label, value, icon, color = 'brand', format, hint, onClick, active }) {
+  const clickable = Boolean(onClick);
   return (
     <Flex
+      as={clickable ? 'button' : undefined}
+      type={clickable ? 'button' : undefined}
+      onClick={onClick}
+      textAlign="left"
+      cursor={clickable ? 'pointer' : 'default'}
+      aria-pressed={clickable ? Boolean(active) : undefined}
       align="flex-start"
       gap={3.5}
       bg="bg.card"
       borderWidth="1px"
-      borderColor="border.soft"
+      borderColor={active ? `${color}.500` : 'border.soft'}
       borderRadius="2xl"
       p={4}
       boxShadow="0 1px 2px rgba(16,24,40,0.04)"
       // Shadow only: <Reveal> animates the card's position, and a CSS transition on it would fight that.
       transition="box-shadow .2s ease"
       _hover={{ boxShadow: 'lift' }}
+      _focusVisible={{ boxShadow: 'outline' }}
     >
       {icon && (
         <Flex
