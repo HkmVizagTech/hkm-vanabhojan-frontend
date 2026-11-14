@@ -7,35 +7,56 @@ import { gsap, useGSAP } from '../../lib/gsap';
 import { useCountdown } from '../../hooks/useCountdown';
 import { formatINR } from '../../utils/format';
 import logo from '../../assets/logo.svg';
-import Gallop from '../../components/scene/Gallop';
-import { CALF_FRAMES, RUN_FRAMES, forest } from '../../components/scene/assets';
 
 // Deterministic pseudo-random so the skyline is identical on every render.
 const rng = seed => () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
 
+function treeLine(seed, count, minH, maxH) {
+  const rand = rng(seed);
+  const step = 1440 / count;
+  let d = '';
+  for (let i = 0; i <= count; i++) {
+    const x = i * step + (rand() - 0.5) * step * 0.6;
+    const h = minH + rand() * (maxH - minH);
+    const w = step * (0.45 + rand() * 0.35);
+    d += `M${(x - w).toFixed(1)},300 C${(x - w).toFixed(1)},${(300 - h * 0.55).toFixed(1)} ${(x - w * 0.3).toFixed(1)},${(300 - h * 0.85).toFixed(1)} ${x.toFixed(1)},${(300 - h).toFixed(1)} C${(x + w * 0.3).toFixed(1)},${(300 - h * 0.85).toFixed(1)} ${(x + w).toFixed(1)},${(300 - h * 0.55).toFixed(1)} ${(x + w).toFixed(1)},300 Z `;
+  }
+  return d;
+}
+const FOREST_BACK = treeLine(11, 17, 110, 220);
+const FOREST_FRONT = treeLine(29, 11, 60, 140);
 const FIREFLIES = Array.from({ length: 16 }, (_, i) => {
   const r = rng(100 + i);
   return { left: `${6 + r() * 88}%`, top: `${18 + r() * 52}%`, delay: `${(r() * 5).toFixed(1)}s`, size: 2 + Math.round(r() * 2) };
 });
 
-/** Fireflies over the painted forest: the "vana" in Vanabhojanam, kept quiet so the text stays readable. */
+/** A quiet forest skyline with a few fireflies: the "vana" in Vanabhojanam, kept minimal. */
 function HeroBackdrop() {
   return (
-    <Box aria-hidden="true" position="absolute" inset={0} pointerEvents="none" overflow="hidden">
-      {FIREFLIES.map((f, i) => (
-        <Box
-          key={i}
-          position="absolute"
-          left={f.left}
-          top={f.top}
-          boxSize={`${f.size}px`}
-          borderRadius="full"
-          bg="#f1d58a"
-          boxShadow="0 0 8px 2px rgba(241,213,138,0.55)"
-          animation={`firefly 4.5s ease-in-out ${f.delay} infinite`}
-        />
-      ))}
-    </Box>
+    <>
+      <Box aria-hidden="true" position="absolute" left={0} right={0} bottom={0} h={{ base: '150px', md: '240px' }} pointerEvents="none">
+        <svg viewBox="0 0 1440 300" preserveAspectRatio="none" width="100%" height="100%">
+          <path d={FOREST_BACK} fill="#10281d" />
+          <path d={FOREST_FRONT} fill="#0b1c15" />
+          <rect x="0" y="296" width="1440" height="4" fill="#0b1c15" />
+        </svg>
+      </Box>
+      <Box aria-hidden="true" position="absolute" inset={0} pointerEvents="none" overflow="hidden">
+        {FIREFLIES.map((f, i) => (
+          <Box
+            key={i}
+            position="absolute"
+            left={f.left}
+            top={f.top}
+            boxSize={`${f.size}px`}
+            borderRadius="full"
+            bg="#f1d58a"
+            boxShadow="0 0 8px 2px rgba(241,213,138,0.55)"
+            animation={`firefly 4.5s ease-in-out ${f.delay} infinite`}
+          />
+        ))}
+      </Box>
+    </>
   );
 }
 
@@ -99,19 +120,11 @@ export default function Hero({ onRegister }) {
       overflow="hidden"
       color="white"
       bg="#0a1511"
-      bgImage={`radial-gradient(ellipse 55% 55% at 50% 38%, rgba(10,21,17,0.55), transparent 80%), linear-gradient(180deg, rgba(10,21,17,0.80) 0%, rgba(10,21,17,0.74) 55%, rgba(10,21,17,0.94) 100%), url(${forest})`}
-      bgSize="cover"
-      bgPosition="center bottom"
-      pt={{ base: '110px', md: '124px' }}
-      pb={{ base: '190px', md: '250px' }}
+      bgImage="radial-gradient(ellipse 55% 60% at 50% 40%, rgba(201,162,74,0.16), transparent 70%), radial-gradient(ellipse 80% 50% at 10% 110%, rgba(31,90,61,0.45), transparent 70%)"
+      pt={{ base: '110px', md: '150px' }}
+      pb={{ base: 28, md: 44 }}
     >
       <HeroBackdrop />
-      {!reduced && (
-        <>
-          <Gallop sheet={RUN_FRAMES} height={{ base: '130px', md: '210px' }} delay={1.5} bottom={{ base: '24px', md: '10px' }} />
-          <Gallop sheet={CALF_FRAMES} height={{ base: '48px', md: '76px' }} delay={4.2} bottom={{ base: '22px', md: '8px' }} />
-        </>
-      )}
       <Container maxW="6xl" position="relative" zIndex={1}>
         <Flex justify="center">
           <VStack align="center" spacing={{ base: 4, md: 6 }} textAlign="center" maxW="3xl">

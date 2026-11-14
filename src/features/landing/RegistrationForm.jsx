@@ -26,7 +26,7 @@ import { COLLEGE_YEARS } from '../../config/event';
 import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { registrationApi } from '../../services/registration';
 import { preloadRazorpay } from '../../hooks/useRazorpay';
-import { krishnaCalf } from '../../components/scene/assets';
+import Figure from '../../components/three/Figure';
 import { formatINR } from '../../utils/format';
 import FormField from '../../components/common/FormField';
 import { buildPayload, feeFor } from './validation';
@@ -151,16 +151,7 @@ export default function RegistrationForm() {
             Pay once and your QR pass arrives on WhatsApp.
           </Text>
         </Box>
-        <Image
-          src={krishnaCalf}
-          alt="Little Krishna smiling with a calf and a bundle of food"
-          draggable={false}
-          h={{ base: '124px', md: '158px' }}
-          flexShrink={0}
-          transformOrigin="50% 100%"
-          animation="kcBreathe 5s ease-in-out infinite"
-          filter="drop-shadow(0 8px 10px rgba(0,0,0,0.4))"
-        />
+        <Figure name="pass" label="3D illustration of a QR entry pass" h={{ base: '130px', md: '170px' }} w={{ base: '120px', md: '160px' }} flexShrink={0} />
       </Flex>
       <CardBody pt={5}>
         <Text color="text.muted" fontSize="xs" mb={4}>

@@ -67,10 +67,6 @@ export const theme = extendTheme({
   styles: {
     global: {
       '@keyframes firefly': { '0%, 100%': { opacity: 0.1, transform: 'translateY(0)' }, '50%': { opacity: 1, transform: 'translateY(-10px)' } },
-      '@keyframes kcFlip': { '0%': { opacity: 1 }, '33.33%': { opacity: 0 }, '100%': { opacity: 0 } },
-      '@keyframes kcBob': { from: { transform: 'translateY(0)' }, to: { transform: 'translateY(-7px)' } },
-      '@keyframes kcCross': { '0%': { transform: 'translateX(-105%)' }, '46%, 100%': { transform: 'translateX(100vw)' } },
-      '@keyframes kcBreathe': { '0%, 100%': { transform: 'scale(1) rotate(-0.6deg)' }, '50%': { transform: 'scale(1.035) rotate(0.6deg)' } },
       '@keyframes kcMeal': { '0%, 100%': { transform: 'translateX(-50%) scale(1)' }, '50%': { transform: 'translateX(-50%) scale(1.015) translateY(-4px)' } },
       '@keyframes kcRays': { '0%, 100%': { opacity: 0.35, transform: 'translateX(-6%)' }, '50%': { opacity: 1, transform: 'translateX(6%)' } },
       '@keyframes heroSheen': { from: { backgroundPosition: '100% 0' }, to: { backgroundPosition: '0% 0' } },
