@@ -108,8 +108,8 @@ export default function Hero({ onRegister }) {
       <HeroBackdrop />
       {!reduced && (
         <>
-          <Gallop sheet={RUN_FRAMES} height={{ base: '130px', md: '210px' }} delay={1.5} bottom="6px" />
-          <Gallop sheet={CALF_FRAMES} height={{ base: '48px', md: '76px' }} delay={4.2} bottom="4px" />
+          <Gallop sheet={RUN_FRAMES} height={{ base: '130px', md: '210px' }} delay={1.5} bottom={{ base: '24px', md: '10px' }} />
+          <Gallop sheet={CALF_FRAMES} height={{ base: '48px', md: '76px' }} delay={4.2} bottom={{ base: '22px', md: '8px' }} />
         </>
       )}
       <Container maxW="6xl" position="relative" zIndex={1}>
