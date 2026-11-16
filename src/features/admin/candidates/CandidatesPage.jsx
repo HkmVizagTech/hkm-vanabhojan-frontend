@@ -30,6 +30,9 @@ import { ACTION_COPY, PAYMENT_COLORS, PAYMENT_STATUSES } from './constants';
 
 const PAGE_SIZE = 50;
 
+// A row whose accept / reject / refund is still being finished on the server: greyed out and not clickable.
+const rowProps = row => (row._busy ? { opacity: 0.45, pointerEvents: 'none', filter: 'grayscale(1)' } : undefined);
+
 const toExcelRow = (row, index) => ({
   'S.No': index + 1,
   Name: row.name,
@@ -87,7 +90,7 @@ export default function CandidatesPage() {
   const dataRef = useRef(data);
   dataRef.current = data;
   const getCandidate = useCallback(id => dataRef.current.find(c => c._id === id), []);
-  const actions = useCandidateActions({ onUpdated: handleUpdated, getCandidate });
+  const actions = useCandidateActions({ onUpdated: handleUpdated, getCandidate, onStart: closeDetail });
 
   const selected = useMemo(() => data.find(c => c._id === selectedId) || null, [data, selectedId]);
   const colleges = useMemo(() => uniqueSorted(data.map(c => c.college)), [data]);
@@ -212,6 +215,7 @@ export default function CandidatesPage() {
         rows={pageItems}
         offset={offset}
         onRowClick={openCandidate}
+        rowProps={rowProps}
         emptyText="No candidates found."
       />
       <Pagination page={page} pageCount={pageCount} onChange={setPage} total={filtered.length} offset={offset} pageSize={PAGE_SIZE} />

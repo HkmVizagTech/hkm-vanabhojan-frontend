@@ -16,7 +16,7 @@ const expectedPatch = action => {
  * Accept / reject / refund flow: accept and reject run at once, a refund asks first; show the result straight away (optimistic), call the API in the
  * background, then replace the guess with the server's row, or put the old values back if the call failed.
  */
-export function useCandidateActions({ onUpdated, getCandidate }) {
+export function useCandidateActions({ onUpdated, getCandidate, onStart }) {
   const toast = useToast();
   const [pending, setPending] = useState(null); // { action, candidateId }
   const [busyId, setBusyId] = useState(null);
@@ -25,13 +25,14 @@ export function useCandidateActions({ onUpdated, getCandidate }) {
 
   const run = useCallback(async (action, candidateId) => {
     setBusyId(candidateId);
-    const guess = expectedPatch(action);
+    onStart?.(); // the detail popup closes at once
+    const guess = { ...expectedPatch(action), _busy: true }; // _busy greys the row until the server has finished
     const before = getCandidate?.(candidateId);
-    const undo = before ? Object.fromEntries(Object.keys(guess).map(key => [key, before[key]])) : null;
-    if (undo) onUpdated(candidateId, guess);
+    const undo = before ? { ...Object.fromEntries(Object.keys(guess).map(key => [key, before[key]])), _busy: false } : null;
+    onUpdated(candidateId, guess);
     try {
       const result = await candidatesApi.act(action, candidateId);
-      onUpdated(candidateId, result.data);
+      onUpdated(candidateId, { ...result.data, _busy: false });
       // The server explains a partial outcome (for example a rejection whose refund failed): show that instead of plain success.
       const partial = result.refund === 'failed';
       toast({
@@ -42,7 +43,7 @@ export function useCandidateActions({ onUpdated, getCandidate }) {
         isClosable: true,
       });
     } catch (error) {
-      if (undo) onUpdated(candidateId, undo);
+      onUpdated(candidateId, undo || { _busy: false });
       toast({
         title: `Failed to ${action} candidate`,
         description: getErrorMessage(error),
@@ -53,7 +54,7 @@ export function useCandidateActions({ onUpdated, getCandidate }) {
     } finally {
       setBusyId(null);
     }
-  }, [onUpdated, getCandidate, toast]);
+  }, [onUpdated, getCandidate, onStart, toast]);
 
   // Accept and reject go straight through; only a refund (money back, cannot be undone) asks first.
   const request = useCallback(
