@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Button, Center, Flex, HStack, IconButton, Input, InputGroup, InputLeftElement, Stack, Text, Textarea, useToast } from '@chakra-ui/react';
 import { GraduationCap, Pencil, Plus, Check, Search, Trash2 } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 import { collegesApi } from '../../../services/colleges';
 import { getErrorMessage } from '../../../services/http';
 import { useAsyncData } from '../../../hooks/useAsyncData';
@@ -11,6 +12,7 @@ import PageHeader from '../PageHeader';
 
 export default function CollegesPage() {
   const toast = useToast();
+  const readOnly = useAuth().role === 'viewer'; // devotees may add colleges, not rename or delete them
   const { data: colleges, loading, error, reload } = useAsyncData(signal => collegesApi.list(signal), []);
   const [name, setName] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -170,10 +172,10 @@ export default function CollegesPage() {
             _hover={{ boxShadow: 'md', borderColor: 'brand.300' }}
           >
             <Text flex="1" wordBreak="break-word">{college.name}</Text>
-            <HStack spacing={1} flexShrink={0}>
+            {!readOnly && <HStack spacing={1} flexShrink={0}>
               <IconButton aria-label={`Edit ${college.name}`} icon={<Pencil size={16} />} size="sm" variant="ghost" isRound onClick={() => { setName(college.name); setEditingId(college._id); }} />
               <IconButton aria-label={`Delete ${college.name}`} icon={<Trash2 size={16} />} size="sm" variant="ghost" colorScheme="red" isRound onClick={() => setToDelete(college)} />
-            </HStack>
+            </HStack>}
           </Flex>
         ))}
         {colleges.length > 0 && visible.length === 0 && <Text color="text.muted" textAlign="center" py={6}>No colleges match "{query}".</Text>}

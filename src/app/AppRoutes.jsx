@@ -40,6 +40,7 @@ export default function AppRoutes() {
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<CandidatesPage />} />
             <Route path="/admin/attendance" element={<AttendancePage />} />
+            <Route path="/admin/college" element={<CollegesPage />} />
           </Route>
         </Route>
 
@@ -54,7 +55,6 @@ export default function AppRoutes() {
             <Route element={<RequireAuth allowedRoles={ADMIN_ONLY} />}>
               <Route path="/admin/events" element={<EventsPage />} />
               <Route path="/admin/insights" element={<InsightsPage />} />
-              <Route path="/admin/college" element={<CollegesPage />} />
               <Route path="/admin/staff" element={<StaffPage />} />
               <Route path="/admin/devotees" element={<DevoteesPage />} />
               <Route path="/admin/register" element={<Navigate to="/admin/staff" replace />} />

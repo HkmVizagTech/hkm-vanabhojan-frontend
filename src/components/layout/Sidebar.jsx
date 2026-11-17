@@ -37,7 +37,7 @@ const GROUPS = [
     label: 'Set up',
     links: [
       { to: '/admin/events', label: 'Events', icon: CalendarPlus, roles: ['admin'] },
-      { to: '/admin/college', label: 'Colleges', icon: GraduationCap, roles: ['admin'] },
+      { to: '/admin/college', label: 'Colleges', icon: GraduationCap, roles: ['admin', 'viewer'] },
       { to: '/admin/staff', label: 'Staff', icon: Users, roles: ['admin'] },
       { to: '/admin/devotees', label: 'Devotees', icon: HeartHandshake, roles: ['admin'] },
     ],
