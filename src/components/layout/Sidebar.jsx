@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Banknote, BarChart3, CalendarCheck, CalendarPlus, GraduationCap, LayoutDashboard, ListChecks, LogOut, Menu, Moon, QrCode, ScanLine, Sun, Users,
+  Banknote, BarChart3, CalendarCheck, CalendarPlus, GraduationCap, HeartHandshake, LayoutDashboard, ListChecks, LogOut, Menu, Moon, QrCode, ScanLine, Sun, Users,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.svg';
@@ -28,8 +28,8 @@ const GROUPS = [
   {
     label: 'Overview',
     links: [
-      { to: '/admin', label: 'Candidates', icon: LayoutDashboard, roles: ['admin'] },
-      { to: '/admin/attendance', label: 'Attendance', icon: CalendarCheck, roles: ['admin'] },
+      { to: '/admin', label: 'Candidates', icon: LayoutDashboard, roles: ['admin', 'viewer'] },
+      { to: '/admin/attendance', label: 'Attendance', icon: CalendarCheck, roles: ['admin', 'viewer'] },
       { to: '/admin/insights', label: 'Insights', icon: BarChart3, roles: ['admin'] },
     ],
   },
@@ -39,6 +39,7 @@ const GROUPS = [
       { to: '/admin/events', label: 'Events', icon: CalendarPlus, roles: ['admin'] },
       { to: '/admin/college', label: 'Colleges', icon: GraduationCap, roles: ['admin'] },
       { to: '/admin/staff', label: 'Staff', icon: Users, roles: ['admin'] },
+      { to: '/admin/devotees', label: 'Devotees', icon: HeartHandshake, roles: ['admin'] },
     ],
   },
   {
@@ -52,7 +53,7 @@ const GROUPS = [
   },
 ];
 
-const roleLabel = ({ role, isSuperAdmin }) => (isSuperAdmin ? 'Super admin' : role === 'admin' ? 'Admin' : 'Volunteer');
+const roleLabel = ({ role, isSuperAdmin }) => (isSuperAdmin ? 'Super admin' : role === 'admin' ? 'Admin' : role === 'viewer' ? 'Devotee (view only)' : 'Volunteer');
 
 function NavItems({ onNavigate }) {
   const { role, canCollectCash } = useAuth();
@@ -110,8 +111,9 @@ function UserCard() {
   const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
   const logoutNow = () => {
+    const wasViewer = auth.role === 'viewer';
     auth.logout();
-    navigate('/admin/login');
+    navigate(wasViewer ? '/devotee' : '/admin/login');
   };
   return (
     <Flex align="center" gap={3} p={3} borderRadius="2xl" bg="blackAlpha.300" borderWidth="1px" borderColor="whiteAlpha.200">

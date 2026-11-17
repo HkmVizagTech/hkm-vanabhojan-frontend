@@ -14,6 +14,7 @@ import ErrorNotice from '../../../components/common/ErrorNotice';
 import Pagination from '../../../components/common/Pagination';
 import StatCard from '../../../components/common/StatCard';
 import StatusChips from '../../../components/common/StatusChips';
+import { useAuth } from '../../../context/AuthContext';
 import { useAdminEvent } from '../../../context/AdminEventContext';
 import EventSwitcher from '../EventSwitcher';
 import ConfirmDialog from '../../../components/common/ConfirmDialog';
@@ -68,6 +69,7 @@ const APPROVAL_OPTIONS = [
 
 export default function CandidatesPage() {
   const navigate = useNavigate();
+  const readOnly = useAuth().role === 'viewer'; // devotees look, they never change anything
   const { selected: eventId, loaded, events } = useAdminEvent();
   const { data, loading, error, reload, setData } = useAsyncData(
     signal => (loaded ? candidatesApi.list(eventId, signal) : Promise.resolve([])),
@@ -168,13 +170,15 @@ export default function CandidatesPage() {
     <Box>
       <PageHeader title="Candidate List" subtitle="Registrations, payments and approvals">
         <EventSwitcher />
-        <RazorpayCheck eventId={eventId} />
+        {!readOnly && <RazorpayCheck eventId={eventId} />}
         <Button variant="outline" leftIcon={<Clock size={16} />} onClick={() => navigate('/admin/attendance')}>
           Go to Attendance
         </Button>
-        <Button leftIcon={<Download size={16} />} onClick={handleExport} isDisabled={filtered.length === 0}>
-          Export to Excel
-        </Button>
+        {!readOnly && (
+          <Button leftIcon={<Download size={16} />} onClick={handleExport} isDisabled={filtered.length === 0}>
+            Export to Excel
+          </Button>
+        )}
       </PageHeader>
 
       <ErrorNotice error={error} onRetry={reload} fallback="Failed to fetch data" />
@@ -208,7 +212,7 @@ export default function CandidatesPage() {
 
       <Box mb={3}>
         <StatusChips options={chips} value={filters.payment} onChange={setFilter('payment')} />
-        <Text mt={2} fontSize="xs" color="text.muted">Showing {filtered.length} records. Click any row for details and actions.</Text>
+        <Text mt={2} fontSize="xs" color="text.muted">Showing {filtered.length} records. Click any row for details{readOnly ? '' : ' and actions'}.</Text>
       </Box>
 
       <DataTable
@@ -227,6 +231,7 @@ export default function CandidatesPage() {
         onClose={closeDetail}
         onAction={actions.request}
         busy={actions.busyId === selected?._id}
+        readOnly={readOnly}
       />
 
       <ConfirmDialog

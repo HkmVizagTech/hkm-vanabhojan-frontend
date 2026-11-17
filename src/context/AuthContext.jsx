@@ -54,7 +54,13 @@ export function AuthProvider({ children }) {
     return data.role;
   }, []);
 
-  const value = useMemo(() => ({ ...state, login, logout, verify }), [state, login, logout, verify]);
+  // Devotees sign in with a WhatsApp code instead of a password; the server answers with the same token shape.
+  const loginWithToken = useCallback(data => {
+    session.save({ token: data.token, role: data.role });
+    setState({ status: 'authenticated', role: data.role, userId: data.id, name: data.name, isSuperAdmin: false, canCollectCash: false });
+  }, []);
+
+  const value = useMemo(() => ({ ...state, login, loginWithToken, logout, verify }), [state, login, loginWithToken, logout, verify]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
@@ -66,7 +72,7 @@ export const useAuth = () => {
 
 /** Where each role lands after signing in. */
 export const homeForRole = role => {
-  if (role === 'admin') return '/admin';
+  if (role === 'admin' || role === 'viewer') return '/admin';
   if (role === 'user') return '/admin/AdminAttendanceScannedList';
   return '/';
 };

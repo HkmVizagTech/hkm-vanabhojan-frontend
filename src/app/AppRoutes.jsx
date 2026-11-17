@@ -9,6 +9,8 @@ import RequireCashAccess from '../components/common/RequireCashAccess';
 const RegistrationPage = lazy(() => import(/* webpackChunkName: "page-registration" */ '../features/landing/RegistrationPage'));
 const ThankYouPage = lazy(() => import(/* webpackChunkName: "page-thank-you" */ '../features/thankyou/ThankYouPage'));
 const QrLookupPage = lazy(() => import(/* webpackChunkName: "page-qr-lookup" */ '../features/attendance/QrLookupPage'));
+const DevoteeLoginPage = lazy(() => import(/* webpackChunkName: "page-devotee-login" */ '../features/auth/DevoteeLoginPage'));
+const DevoteesPage = lazy(() => import(/* webpackChunkName: "page-devotees" */ '../features/admin/devotees/DevoteesPage'));
 const LoginPage = lazy(() => import(/* webpackChunkName: "page-login" */ '../features/auth/LoginPage'));
 const CashDeskPage = lazy(() => import(/* webpackChunkName: "page-cash-desk" */ '../features/admin/cash/CashDeskPage'));
 const StaffPage = lazy(() => import(/* webpackChunkName: "page-staff" */ '../features/admin/staff/StaffPage'));
@@ -22,6 +24,7 @@ const InsightsPage = lazy(() => import(/* webpackChunkName: "page-insights" */ '
 
 const STAFF = ['admin', 'user'];
 const ADMIN_ONLY = ['admin'];
+const VIEWERS = ['admin', 'viewer']; // devotees signed in by WhatsApp code: look, never change
 
 export default function AppRoutes() {
   return (
@@ -31,6 +34,14 @@ export default function AppRoutes() {
         <Route path="/thankyou/:id" element={<ThankYouPage />} />
         <Route path="/attendance" element={<QrLookupPage />} />
         <Route path="/admin/login" element={<LoginPage />} />
+        <Route path="/devotee" element={<DevoteeLoginPage />} />
+
+        <Route element={<RequireAuth allowedRoles={VIEWERS} />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<CandidatesPage />} />
+            <Route path="/admin/attendance" element={<AttendancePage />} />
+          </Route>
+        </Route>
 
         <Route element={<RequireAuth allowedRoles={STAFF} />}>
           <Route element={<AdminLayout />}>
@@ -41,12 +52,11 @@ export default function AppRoutes() {
             <Route path="/admin/AdminAttendanceScannedList" element={<ScannedListPage />} />
             <Route path="/admin/qr" element={<QrLookupPage embedded />} />
             <Route element={<RequireAuth allowedRoles={ADMIN_ONLY} />}>
-              <Route path="/admin" element={<CandidatesPage />} />
-              <Route path="/admin/attendance" element={<AttendancePage />} />
               <Route path="/admin/events" element={<EventsPage />} />
               <Route path="/admin/insights" element={<InsightsPage />} />
               <Route path="/admin/college" element={<CollegesPage />} />
               <Route path="/admin/staff" element={<StaffPage />} />
+              <Route path="/admin/devotees" element={<DevoteesPage />} />
               <Route path="/admin/register" element={<Navigate to="/admin/staff" replace />} />
             </Route>
           </Route>

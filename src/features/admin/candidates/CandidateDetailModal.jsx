@@ -28,14 +28,14 @@ const Pair = ({ label, children }) => (
   </HStack>
 );
 
-export default function CandidateDetailModal({ candidate, isOpen, onClose, onAction, busy }) {
+export default function CandidateDetailModal({ candidate, isOpen, onClose, onAction, busy, readOnly }) {
   if (!candidate) return null;
   const c = candidate;
   const isCollege = c.collegeOrWorking === 'College';
   const isPaid = c.paymentStatus === 'Paid';
   // Accept / Reject is only for a student whose ID photo is still to be checked; refunds only for online payments.
-  const canDecide = isPaid && needsApproval(c) && !c.adminAction;
-  const canRefund = isPaid && c.paymentMethod !== 'Cash';
+  const canDecide = !readOnly && isPaid && needsApproval(c) && !c.adminAction;
+  const canRefund = !readOnly && isPaid && c.paymentMethod !== 'Cash';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside">
@@ -125,7 +125,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
             )}
 
             <Divider />
-            <QrSection candidate={c} />
+            {!readOnly && <QrSection candidate={c} />}
 
             <Divider />
             <Box>

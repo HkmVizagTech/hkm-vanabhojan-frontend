@@ -14,6 +14,7 @@ import Pagination from '../../../components/common/Pagination';
 import StatCard from '../../../components/common/StatCard';
 import PageHeader from '../PageHeader';
 import EventSwitcher from '../EventSwitcher';
+import { useAuth } from '../../../context/AuthContext';
 import { useAdminEvent } from '../../../context/AdminEventContext';
 import DataTable from '../DataTable';
 import { FilterBar, InputFilter, SelectFilter } from '../FilterBar';
@@ -84,6 +85,7 @@ const toExcelRow = (row, idx) => ({
 });
 
 export default function AttendancePage() {
+  const readOnly = useAuth().role === 'viewer'; // devotees look, they never export
   const { selected, loaded } = useAdminEvent();
   const { data, loading, error, reload } = useAsyncData(
     // Only paid registrations are attendees. Pending and Failed rows are payment attempts (one person can have several),
@@ -130,9 +132,11 @@ export default function AttendancePage() {
     <Box>
       <PageHeader title="All Registrations & Attendance" subtitle="Paid registrations only. Family members share a WhatsApp number and are grouped together">
         <EventSwitcher />
-        <Button leftIcon={<Download size={16} />} onClick={() => exportToExcel({ rows: filtered.map(toExcelRow), sheetName: 'All Registrations', fileName: 'all-registrations-attendance.xlsx' })} isDisabled={filtered.length === 0}>
-          Export to Excel
-        </Button>
+        {!readOnly && (
+          <Button leftIcon={<Download size={16} />} onClick={() => exportToExcel({ rows: filtered.map(toExcelRow), sheetName: 'All Registrations', fileName: 'all-registrations-attendance.xlsx' })} isDisabled={filtered.length === 0}>
+            Export to Excel
+          </Button>
+        )}
       </PageHeader>
 
       <ErrorNotice error={error} onRetry={reload} fallback="Failed to fetch candidates list" />
