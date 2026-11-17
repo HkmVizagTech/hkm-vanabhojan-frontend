@@ -191,6 +191,10 @@ export default function RegistrationForm() {
               <Input type="email" autoComplete="email" placeholder="your.email@example.com" {...text('email')} />
             </FormField>
 
+            <FormField id="area" label="Area" required error={errors.area}>
+              <Input placeholder="Where you live, e.g. MVP Colony, Gajuwaka" autoComplete="address-level3" {...text('area')} />
+            </FormField>
+
             <FormField id="gender" label="Gender" required error={errors.gender}>
               <RadioGroup value={values.gender} onChange={v => setField('gender', v)}>
                 <HStack spacing={6}>

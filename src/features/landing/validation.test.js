@@ -7,6 +7,7 @@ const valid = {
   whatsappNumber: '9876543210',
   email: 'arjun@example.com',
   gender: 'Male',
+  area: 'MVP Colony',
   collegeOrWorking: 'College',
   college: 'AU College',
   course: 'B.Tech',
@@ -21,7 +22,7 @@ describe('validateRegistration', () => {
   it('flags every required field on an empty form', () => {
     const errors = validateRegistration(initialValues);
     expect(Object.keys(errors)).toEqual(
-      expect.arrayContaining(['name', 'dob', 'whatsappNumber', 'email', 'gender', 'collegeOrWorking'])
+      expect.arrayContaining(['name', 'dob', 'whatsappNumber', 'email', 'area', 'gender', 'collegeOrWorking'])
     );
   });
 

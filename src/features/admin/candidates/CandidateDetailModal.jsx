@@ -79,6 +79,7 @@ export default function CandidateDetailModal({ candidate, isOpen, onClose, onAct
                     <HStack><Icon as={Mail} color="teal.500" /><Text fontSize="sm" fontWeight="medium">{c.email}</Text></HStack>
                     <HStack><Icon as={Phone} color="green.500" /><Text fontSize="sm" fontWeight="medium">{c.whatsappNumber}</Text></HStack>
                     <Pair label="Gender:"><Tag size="sm" colorScheme="purple">{c.gender}</Tag></Pair>
+                    <Pair label="Area:">{c.area || 'N/A'}</Pair>
                     <Pair label="DOB:">{formatDate(c.dob) || 'N/A'}</Pair>
                     {c.howDidYouKnow && <Pair label="Source:"><Tag size="sm" colorScheme="teal" variant="outline">{c.howDidYouKnow}</Tag></Pair>}
                   </VStack>

@@ -38,6 +38,7 @@ const toExcelRow = (row, index) => ({
   Name: row.name,
   Gender: row.gender,
   Email: row.email,
+  Area: row.area,
   College: row.college,
   'Company Name': row.companyName,
   Course: row.course,
@@ -104,7 +105,7 @@ export default function CandidatesPage() {
           (!filters.type || c.collegeOrWorking === filters.type) &&
           matchesApproval(c, filters.approval) &&
           inDateRange(c.registrationDate, filters.start, filters.end) &&
-          matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.companyName], search)
+          matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.companyName, c.area], search)
       ),
     [data, filters.college, filters.type, filters.approval, filters.start, filters.end, search]
   );

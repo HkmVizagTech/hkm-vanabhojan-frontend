@@ -86,6 +86,7 @@ export const candidateColumns = [
     wrap: true,
     render: c => <Text fontSize="sm">{c.college || <chakra.span color="blue.500">{c.companyName || '-'}</chakra.span>}</Text>,
   },
+  { key: 'area', header: 'Area', minW: '120px', wrap: true, render: c => c.area || '-' },
   { key: 'course', header: 'Course', render: c => c.course || '-' },
   { key: 'year', header: 'Year', render: c => c.year || '-' },
   { key: 'idcard', header: 'ID Card', render: c => <IdCardCell candidate={c} /> },

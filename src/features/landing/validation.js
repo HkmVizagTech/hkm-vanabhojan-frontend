@@ -12,6 +12,7 @@ export const initialValues = {
   course: '',
   year: '',
   dob: '',
+  area: '',
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,6 +32,8 @@ export function validateRegistration(values, { hasIdCard = true } = {}) {
   if (!values.email) e.email = 'Email is required';
   else if (!EMAIL_RE.test(values.email)) e.email = 'Enter a valid email';
 
+  if (!values.area.trim()) e.area = 'Area is required';
+
   if (!values.gender) e.gender = 'Please select gender';
   if (!values.collegeOrWorking) e.collegeOrWorking = 'Please select one option';
 
@@ -47,7 +50,7 @@ export function validateRegistration(values, { hasIdCard = true } = {}) {
 
 /** Field order on screen, used to focus the first invalid field. */
 export const FIELD_ORDER = [
-  'name', 'dob', 'whatsappNumber', 'email', 'gender', 'collegeOrWorking',
+  'name', 'dob', 'whatsappNumber', 'email', 'area', 'gender', 'collegeOrWorking',
   'companyName', 'college', 'course', 'year', 'studentIdCard',
 ];
 
@@ -61,5 +64,6 @@ export function buildPayload(values) {
     name: values.name.trim(),
     whatsappNumber: onlyDigits(values.whatsappNumber),
     college: values.college.trim(),
+    area: values.area.trim(),
   };
 }
