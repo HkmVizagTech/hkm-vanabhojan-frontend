@@ -169,7 +169,7 @@ export default function DevoteesPage() {
         </Card>
       </SimpleGrid>
 
-      <Text fontSize="sm" color="text.muted" mb={2}>{data.length} devotees. A devotee signs in only if their number is here and their access is on.</Text>
+      <Text fontSize="sm" color="text.muted" mb={2}>{data.length} {data.length === 1 ? 'devotee' : 'devotees'}. A devotee signs in only if their number is here and their access is on.</Text>
       <DataTable columns={columns} rows={data} emptyText="No devotees yet. Add one above." />
 
       <ConfirmDialog isOpen={confirm.isOpen} onClose={confirm.onClose} onConfirm={remove} confirmLabel="Remove" title="Remove devotee">

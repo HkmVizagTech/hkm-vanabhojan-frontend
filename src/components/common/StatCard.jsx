@@ -13,8 +13,9 @@ export default function StatCard({ label, value, icon, color = 'brand', format, 
       textAlign="left"
       cursor={clickable ? 'pointer' : 'default'}
       aria-pressed={clickable ? Boolean(active) : undefined}
+      direction={{ base: 'column', sm: 'row' }}
       align="flex-start"
-      gap={3.5}
+      gap={{ base: 2.5, sm: 3.5 }}
       bg="bg.card"
       borderWidth="1px"
       borderColor={active ? `${color}.500` : 'border.soft'}
@@ -29,7 +30,7 @@ export default function StatCard({ label, value, icon, color = 'brand', format, 
       {icon && (
         <Flex
           flexShrink={0}
-          boxSize="44px"
+          boxSize={{ base: '36px', sm: '44px' }}
           align="center"
           justify="center"
           borderRadius="xl"
@@ -40,7 +41,7 @@ export default function StatCard({ label, value, icon, color = 'brand', format, 
         </Flex>
       )}
       <Box minW={0}>
-        <Text fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="text.muted" fontWeight="bold" noOfLines={1}>
+        <Text fontSize={{ base: '10px', md: 'xs' }} textTransform="uppercase" letterSpacing={{ base: '0.04em', md: '0.08em' }} color="text.muted" fontWeight="bold" noOfLines={2}>
           {label}
         </Text>
         <Text fontSize="2xl" fontWeight="extrabold" lineHeight="1.15" mt={0.5}>
