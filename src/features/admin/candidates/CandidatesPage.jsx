@@ -174,11 +174,9 @@ export default function CandidatesPage() {
         <Button variant="outline" leftIcon={<Clock size={16} />} onClick={() => navigate('/admin/attendance')}>
           Go to Attendance
         </Button>
-        {!readOnly && (
-          <Button leftIcon={<Download size={16} />} onClick={handleExport} isDisabled={filtered.length === 0}>
-            Export to Excel
-          </Button>
-        )}
+        <Button leftIcon={<Download size={16} />} onClick={handleExport} isDisabled={filtered.length === 0}>
+          Export to Excel
+        </Button>
       </PageHeader>
 
       <ErrorNotice error={error} onRetry={reload} fallback="Failed to fetch data" />
