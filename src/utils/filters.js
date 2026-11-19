@@ -33,4 +33,17 @@ export const matchesTimeOfDay = (isoDate, timeFilter, startDate) => {
   return true;
 };
 
+/** Areas are typed by hand, so "MVP Colony" and "mvp  colony" are one area. The key is lower case with single spaces. */
+export const areaKey = value => String(value ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+/** Options for an Area filter: one per distinct area (first spelling seen is the label), sorted by name. */
+export const areaOptions = values => {
+  const seen = new Map();
+  values.forEach(v => {
+    const key = areaKey(v);
+    if (key && !seen.has(key)) seen.set(key, String(v).trim().replace(/\s+/g, ' '));
+  });
+  return [...seen].map(([value, label]) => ({ value, label })).sort((a, b) => a.label.localeCompare(b.label));
+};
+
 export const uniqueSorted = values => [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));

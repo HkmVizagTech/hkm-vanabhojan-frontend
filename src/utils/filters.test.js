@@ -1,4 +1,4 @@
-import { inDateRange, matchesSearch, matchesTimeOfDay, uniqueSorted } from './filters';
+import { areaKey, areaOptions, inDateRange, matchesSearch, matchesTimeOfDay, uniqueSorted } from './filters';
 
 describe('inDateRange', () => {
   it('passes everything when no bounds are set', () => {
@@ -37,5 +37,15 @@ describe('matchesTimeOfDay', () => {
 describe('uniqueSorted', () => {
   it('dedupes, drops empties and sorts', () => {
     expect(uniqueSorted(['B', '', 'A', 'B', undefined])).toEqual(['A', 'B']);
+  });
+});
+
+describe('areaOptions', () => {
+  it('treats different spellings of an area as one and skips blanks', () => {
+    expect(areaOptions(['MVP Colony', 'mvp  colony ', '', undefined, 'Gajuwaka'])).toEqual([
+      { value: 'gajuwaka', label: 'Gajuwaka' },
+      { value: 'mvp colony', label: 'MVP Colony' },
+    ]);
+    expect(areaKey(' MVP   Colony ')).toBe('mvp colony');
   });
 });

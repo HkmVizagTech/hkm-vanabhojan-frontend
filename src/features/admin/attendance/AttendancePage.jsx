@@ -6,7 +6,7 @@ import { useAsyncData } from '../../../hooks/useAsyncData';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { usePagination } from '../../../hooks/usePagination';
 import { exportToExcel } from '../../../utils/exportExcel';
-import { inDateRange, matchesSearch, uniqueSorted } from '../../../utils/filters';
+import { areaKey, areaOptions, inDateRange, matchesSearch, uniqueSorted } from '../../../utils/filters';
 import { formatDate, formatDateTime } from '../../../utils/format';
 import PageSpinner from '../../../components/common/PageSpinner';
 import ErrorNotice from '../../../components/common/ErrorNotice';
@@ -52,6 +52,7 @@ const columns = [
   },
   { key: 'college', header: 'College/Company', minW: '180px', wrap: true, render: c => <Text fontSize="sm">{c.college}</Text> },
   { key: 'branch', header: 'Branch', render: c => c.branch },
+  { key: 'area', header: 'Area', minW: '120px', wrap: true, render: c => c.area || '-' },
   { key: 'email', header: 'Email', render: c => <Text fontSize="sm" noOfLines={1} maxW="160px" title={c.email}>{c.email}</Text> },
   {
     key: 'attendance',
@@ -77,6 +78,7 @@ const toExcelRow = (row, idx) => ({
   Email: row.email,
   'College/Company': row.college,
   Branch: row.branch,
+  Area: row.area,
   Phone: row.whatsappNumber,
   Attendance: hasAttended(row) ? 'Yes' : 'No',
   'Attendance Date': formatDateTime(attendedAt(row)),
@@ -92,19 +94,21 @@ export default function AttendancePage() {
     [],
     [selected, loaded]
   );
-  const [filters, setFilters] = useState({ college: '', start: '', end: '', search: '' });
+  const [filters, setFilters] = useState({ college: '', area: '', start: '', end: '', search: '' });
   const search = useDebouncedValue(filters.search);
   const setFilter = name => value => setFilters(prev => ({ ...prev, [name]: value }));
 
   const colleges = useMemo(() => uniqueSorted(data.map(c => c.college)), [data]);
+  const areas = useMemo(() => areaOptions(data.map(c => c.area)), [data]);
 
   const filtered = useMemo(() => {
     const rows = data.filter(c => {
       const date = attendedAt(c) || c.registrationDate;
       return (
         (!filters.college || c.college === filters.college) &&
+        (!filters.area || areaKey(c.area) === filters.area) &&
         inDateRange(date, filters.start, filters.end) &&
-        matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.branch], search)
+        matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.branch, c.area], search)
       );
     });
     // One pass to group family members (same WhatsApp number) instead of a scan per row.
@@ -119,7 +123,7 @@ export default function AttendancePage() {
       const g = groups.get(c.whatsappNumber);
       return g.size > 1 ? { ...c, family: g } : c;
     });
-  }, [data, filters.college, filters.start, filters.end, search]);
+  }, [data, filters.college, filters.area, filters.start, filters.end, search]);
 
   const attended = useMemo(() => filtered.filter(hasAttended).length, [filtered]);
   const { page, setPage, pageCount, pageItems, offset } = usePagination(filtered, PAGE_SIZE);
@@ -143,8 +147,9 @@ export default function AttendancePage() {
         <StatCard label="Not attended" value={filtered.length - attended} icon={Percent} color="orange" hint={filtered.length ? `${Math.round((attended / filtered.length) * 100)}% turnout` : undefined} />
       </SimpleGrid>
 
-      <FilterBar columns={{ base: 1, sm: 2, lg: 4 }}>
+      <FilterBar columns={{ base: 1, sm: 2, lg: 5 }}>
         <SelectFilter label="College/Company" placeholder="All" value={filters.college} onChange={setFilter('college')} options={colleges} />
+        <SelectFilter label="Area" placeholder="All areas" value={filters.area} onChange={setFilter('area')} options={areas} />
         <InputFilter label="From" type="date" value={filters.start} onChange={setFilter('start')} />
         <InputFilter label="To" type="date" value={filters.end} onChange={setFilter('end')} />
         <InputFilter label="Search" placeholder="Phone number shows the whole family..." value={filters.search} onChange={setFilter('search')} />

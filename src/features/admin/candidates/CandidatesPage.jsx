@@ -7,7 +7,7 @@ import { useAsyncData } from '../../../hooks/useAsyncData';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { usePagination } from '../../../hooks/usePagination';
 import { exportToExcel } from '../../../utils/exportExcel';
-import { inDateRange, matchesSearch, uniqueSorted } from '../../../utils/filters';
+import { areaKey, areaOptions, inDateRange, matchesSearch, uniqueSorted } from '../../../utils/filters';
 import { formatDateTime, formatDateTimeIST, formatINR } from '../../../utils/format';
 import PageSpinner from '../../../components/common/PageSpinner';
 import ErrorNotice from '../../../components/common/ErrorNotice';
@@ -77,7 +77,7 @@ export default function CandidatesPage() {
     [eventId, loaded]
   );
   const eventName = events.find(e => e._id === eventId)?.name;
-  const [filters, setFilters] = useState({ college: '', type: '', approval: '', payment: '', start: '', end: '', search: '' });
+  const [filters, setFilters] = useState({ college: '', area: '', type: '', approval: '', payment: '', start: '', end: '', search: '' });
   const [selectedId, setSelectedId] = useState(null);
   const { isOpen: isDetailOpen, onOpen: openDetail, onClose: closeDetail } = useDisclosure();
   const search = useDebouncedValue(filters.search);
@@ -97,6 +97,7 @@ export default function CandidatesPage() {
 
   const selected = useMemo(() => data.find(c => c._id === selectedId) || null, [data, selectedId]);
   const colleges = useMemo(() => uniqueSorted(data.map(c => c.college)), [data]);
+  const areas = useMemo(() => areaOptions(data.map(c => c.area)), [data]);
 
   // Everything except the status chip, so each chip can show how many it would give.
   const baseFiltered = useMemo(
@@ -104,12 +105,13 @@ export default function CandidatesPage() {
       data.filter(
         c =>
           (!filters.college || c.college === filters.college) &&
+          (!filters.area || areaKey(c.area) === filters.area) &&
           (!filters.type || c.collegeOrWorking === filters.type) &&
           matchesApproval(c, filters.approval) &&
           inDateRange(c.registrationDate, filters.start, filters.end) &&
           matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.companyName, c.area], search)
       ),
-    [data, filters.college, filters.type, filters.approval, filters.start, filters.end, search]
+    [data, filters.college, filters.area, filters.type, filters.approval, filters.start, filters.end, search]
   );
   const filtered = useMemo(
     () => (filters.payment ? baseFiltered.filter(c => c.paymentStatus === filters.payment) : baseFiltered),
@@ -199,10 +201,11 @@ export default function CandidatesPage() {
         </SimpleGrid>
       </Reveal>
 
-      <FilterBar columns={{ base: 1, sm: 2, lg: 3, xl: 6 }}>
+      <FilterBar columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}>
         <SelectFilter label="Type" placeholder="All types" value={filters.type} onChange={setFilter('type')} options={TYPE_OPTIONS} />
         <SelectFilter label="Student ID" placeholder="Any" value={filters.approval} onChange={setFilter('approval')} options={APPROVAL_OPTIONS} />
         <SelectFilter label="College" placeholder="All colleges" value={filters.college} onChange={setFilter('college')} options={colleges} />
+        <SelectFilter label="Area" placeholder="All areas" value={filters.area} onChange={setFilter('area')} options={areas} />
         <InputFilter label="From" type="date" value={filters.start} onChange={setFilter('start')} />
         <InputFilter label="To" type="date" value={filters.end} onChange={setFilter('end')} />
         <InputFilter label="Search" placeholder="Name, email, phone, college..." value={filters.search} onChange={setFilter('search')} />
