@@ -29,6 +29,7 @@ import { preloadRazorpay } from '../../hooks/useRazorpay';
 import Figure from '../../components/three/Figure';
 import { formatINR } from '../../utils/format';
 import FormField from '../../components/common/FormField';
+import { isInAppBrowser } from '../../utils/inAppBrowser';
 import { buildPayload, feeFor } from './validation';
 import { useRegistrationForm } from './useRegistrationForm';
 import { usePayment } from './usePayment';
@@ -90,6 +91,7 @@ export default function RegistrationForm() {
   const { values, errors, setField, idCard, pickIdCard, clearIdCard, validate } = useRegistrationForm();
   const { pay, isPaying } = usePayment();
   const [colleges, setColleges] = useState([]);
+  const inApp = useMemo(() => isInAppBrowser(), []);
   const dark = useColorModeValue(false, true);
   const selectStyles = useMemo(() => collegeSelectStyles(dark), [dark]);
 
@@ -312,8 +314,17 @@ export default function RegistrationForm() {
             >
               {cta}
             </Button>
+            {inApp && (
+              <Alert status="warning" borderRadius="md" fontSize="sm" alignItems="flex-start">
+                <AlertIcon />
+                <Box>
+                  <b>For UPI to work, open this page in Chrome or Safari.</b> The browser inside WhatsApp or Instagram often cannot open your
+                  UPI app. Tap the menu (⋮ or ⋯) and choose "Open in browser".
+                </Box>
+              </Alert>
+            )}
             <Text textAlign="center" fontSize="sm" color="text.muted">
-              Secure payment via Razorpay. Your QR pass is sent to your WhatsApp number.
+              Secure payment via Razorpay. Keep this page open while you approve the payment in your UPI app. Your QR pass is sent to your WhatsApp number.
             </Text>
           </Stack>
         </form>
