@@ -77,7 +77,7 @@ export default function CandidatesPage() {
     [eventId, loaded]
   );
   const eventName = events.find(e => e._id === eventId)?.name;
-  const [filters, setFilters] = useState({ college: '', area: '', type: '', approval: '', payment: '', start: '', end: '', search: '' });
+  const [filters, setFilters] = useState({ college: '', area: '', gender: '', type: '', approval: '', payment: '', start: '', end: '', search: '' });
   const [selectedId, setSelectedId] = useState(null);
   const { isOpen: isDetailOpen, onOpen: openDetail, onClose: closeDetail } = useDisclosure();
   const search = useDebouncedValue(filters.search);
@@ -106,12 +106,13 @@ export default function CandidatesPage() {
         c =>
           (!filters.college || c.college === filters.college) &&
           (!filters.area || areaKey(c.area) === filters.area) &&
+          (!filters.gender || c.gender === filters.gender) &&
           (!filters.type || c.collegeOrWorking === filters.type) &&
           matchesApproval(c, filters.approval) &&
           inDateRange(c.registrationDate, filters.start, filters.end) &&
           matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.companyName, c.area], search)
       ),
-    [data, filters.college, filters.area, filters.type, filters.approval, filters.start, filters.end, search]
+    [data, filters.college, filters.area, filters.gender, filters.type, filters.approval, filters.start, filters.end, search]
   );
   const filtered = useMemo(
     () => (filters.payment ? baseFiltered.filter(c => c.paymentStatus === filters.payment) : baseFiltered),
@@ -212,6 +213,7 @@ export default function CandidatesPage() {
         <SelectFilter label="Student ID" placeholder="Any" value={filters.approval} onChange={setFilter('approval')} options={APPROVAL_OPTIONS} />
         <SelectFilter label="College" placeholder="All colleges" value={filters.college} onChange={setFilter('college')} options={colleges} />
         <SelectFilter label="Area" placeholder="All areas" value={filters.area} onChange={setFilter('area')} options={areas} />
+        <SelectFilter label="Gender" placeholder="All" value={filters.gender} onChange={setFilter('gender')} options={['Male', 'Female']} />
         <InputFilter label="From" type="date" value={filters.start} onChange={setFilter('start')} />
         <InputFilter label="To" type="date" value={filters.end} onChange={setFilter('end')} />
         <InputFilter label="Search" placeholder="Name, email, phone, college..." value={filters.search} onChange={setFilter('search')} />

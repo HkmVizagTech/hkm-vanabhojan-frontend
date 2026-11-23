@@ -85,6 +85,8 @@ const toExcelRow = (row, idx) => ({
   'Registration Date': formatDateTime(row.registrationDate),
 });
 
+const GENDER_OPTIONS = ['Male', 'Female'];
+
 export default function AttendancePage() {
   const { selected, loaded } = useAdminEvent();
   const { data, loading, error, reload } = useAsyncData(
@@ -94,7 +96,7 @@ export default function AttendancePage() {
     [],
     [selected, loaded]
   );
-  const [filters, setFilters] = useState({ college: '', area: '', start: '', end: '', search: '' });
+  const [filters, setFilters] = useState({ college: '', area: '', gender: '', start: '', end: '', search: '' });
   const search = useDebouncedValue(filters.search);
   const setFilter = name => value => setFilters(prev => ({ ...prev, [name]: value }));
 
@@ -107,6 +109,7 @@ export default function AttendancePage() {
       return (
         (!filters.college || c.college === filters.college) &&
         (!filters.area || areaKey(c.area) === filters.area) &&
+        (!filters.gender || c.gender === filters.gender) &&
         inDateRange(date, filters.start, filters.end) &&
         matchesSearch([c.name, c.email, c.whatsappNumber, c.college, c.branch, c.area], search)
       );
@@ -123,7 +126,7 @@ export default function AttendancePage() {
       const g = groups.get(c.whatsappNumber);
       return g.size > 1 ? { ...c, family: g } : c;
     });
-  }, [data, filters.college, filters.area, filters.start, filters.end, search]);
+  }, [data, filters.college, filters.area, filters.gender, filters.start, filters.end, search]);
 
   const male = useMemo(() => filtered.filter(c => c.gender === 'Male').length, [filtered]);
   const female = useMemo(() => filtered.filter(c => c.gender === 'Female').length, [filtered]);
@@ -154,6 +157,7 @@ export default function AttendancePage() {
       <FilterBar columns={{ base: 1, sm: 2, lg: 5 }}>
         <SelectFilter label="College/Company" placeholder="All" value={filters.college} onChange={setFilter('college')} options={colleges} />
         <SelectFilter label="Area" placeholder="All areas" value={filters.area} onChange={setFilter('area')} options={areas} />
+        <SelectFilter label="Gender" placeholder="All" value={filters.gender} onChange={setFilter('gender')} options={GENDER_OPTIONS} />
         <InputFilter label="From" type="date" value={filters.start} onChange={setFilter('start')} />
         <InputFilter label="To" type="date" value={filters.end} onChange={setFilter('end')} />
         <InputFilter label="Search" placeholder="Phone number shows the whole family..." value={filters.search} onChange={setFilter('search')} />
