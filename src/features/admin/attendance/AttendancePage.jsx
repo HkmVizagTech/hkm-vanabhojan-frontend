@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Badge, Box, Button, HStack, SimpleGrid, Text } from '@chakra-ui/react';
-import { AlertTriangle, CheckCircle2, Download, Percent, Phone, Users } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, Percent, Phone, User, Users } from 'lucide-react';
 import { candidatesApi } from '../../../services/candidates';
 import { useAsyncData } from '../../../hooks/useAsyncData';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
@@ -125,6 +125,8 @@ export default function AttendancePage() {
     });
   }, [data, filters.college, filters.area, filters.start, filters.end, search]);
 
+  const male = useMemo(() => filtered.filter(c => c.gender === 'Male').length, [filtered]);
+  const female = useMemo(() => filtered.filter(c => c.gender === 'Female').length, [filtered]);
   const attended = useMemo(() => filtered.filter(hasAttended).length, [filtered]);
   const { page, setPage, pageCount, pageItems, offset } = usePagination(filtered, PAGE_SIZE);
 
@@ -141,10 +143,12 @@ export default function AttendancePage() {
 
       <ErrorNotice error={error} onRetry={reload} fallback="Failed to fetch candidates list" />
 
-      <SimpleGrid columns={{ base: 1, sm: 3 }} spacing={3} mb={4}>
+      <SimpleGrid columns={{ base: 2, md: 5 }} spacing={3} mb={4}>
         <StatCard label="Total registrations" value={filtered.length} icon={Users} />
         <StatCard label="Attended" value={attended} icon={CheckCircle2} color="green" />
         <StatCard label="Not attended" value={filtered.length - attended} icon={Percent} color="orange" hint={filtered.length ? `${Math.round((attended / filtered.length) * 100)}% turnout` : undefined} />
+        <StatCard label="Male" value={male} icon={User} color="blue" />
+        <StatCard label="Female" value={female} icon={User} color="pink" />
       </SimpleGrid>
 
       <FilterBar columns={{ base: 1, sm: 2, lg: 5 }}>
