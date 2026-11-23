@@ -131,8 +131,6 @@ export default function CandidatesPage() {
       working: sumOf('Working'),
       attended: filtered.filter(c => c.attendance).length,
       awaiting: filtered.filter(awaitingApproval).length,
-      male: filtered.filter(c => c.gender === 'Male').length,
-      female: filtered.filter(c => c.gender === 'Female').length,
       malePaid: paid.filter(c => c.gender === 'Male').length,
       femalePaid: paid.filter(c => c.gender === 'Female').length,
     };
@@ -194,8 +192,8 @@ export default function CandidatesPage() {
           <StatCard label="Paid" value={overview.paid} icon={CheckCheck} color="green" />
           <StatCard label="Revenue" value={overview.revenue} icon={IndianRupee} color="saffron" format={n => formatINR(n)} hint={filters.type ? `${overview.paid} paid` : `Students ${formatINR(overview.students)} · Working ${formatINR(overview.working)}`} />
           <StatCard label="Attended" value={overview.attended} icon={UserCheck} color="lotus" hint={overview.paid ? `${Math.round((overview.attended / overview.paid) * 100)}% of paid` : undefined} />
-          <StatCard label="Male" value={overview.male} icon={User} color="blue" hint={`${overview.malePaid} paid`} />
-          <StatCard label="Female" value={overview.female} icon={User} color="pink" hint={`${overview.femalePaid} paid`} />
+          <StatCard label="Male (paid)" value={overview.malePaid} icon={User} color="blue" />
+          <StatCard label="Female (paid)" value={overview.femalePaid} icon={User} color="pink" />
           <StatCard
             label="Awaiting action"
             value={overview.awaiting}
