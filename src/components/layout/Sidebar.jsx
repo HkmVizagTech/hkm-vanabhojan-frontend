@@ -45,23 +45,23 @@ const GROUPS = [
   {
     label: 'On the day',
     links: [
-      { to: '/admin/cash', label: 'Cash desk', icon: Banknote, roles: ['admin', 'user'], needsCash: true },
-      { to: '/admin/adminqrscanner', label: 'QR scanner', icon: ScanLine, roles: ['admin', 'user'] },
-      { to: '/admin/qr', label: 'QR lookup', icon: QrCode, roles: ['admin', 'user'] },
-      { to: '/admin/AdminAttendanceScannedList', label: 'Scanned list', icon: ListChecks, roles: ['admin', 'user'] },
+      { to: '/admin/cash', label: 'Cash desk', icon: Banknote, roles: ['admin', 'user', 'viewer'], needsCash: true },
+      { to: '/admin/adminqrscanner', label: 'QR scanner', icon: ScanLine, roles: ['admin', 'user', 'viewer'], needsScan: true },
+      { to: '/admin/qr', label: 'QR lookup', icon: QrCode, roles: ['admin', 'user', 'viewer'], needsScan: true },
+      { to: '/admin/AdminAttendanceScannedList', label: 'Scanned list', icon: ListChecks, roles: ['admin', 'user', 'viewer'], needsScan: true },
     ],
   },
 ];
 
-const roleLabel = ({ role, isSuperAdmin }) => (isSuperAdmin ? 'Super admin' : role === 'admin' ? 'Admin' : role === 'viewer' ? 'Devotee (view only)' : 'Volunteer');
+const roleLabel = ({ role, isSuperAdmin, kind }) => (isSuperAdmin ? 'Super admin' : role === 'admin' ? 'Admin' : role === 'viewer' ? (kind === 'devotee' ? 'Devotee (view only)' : 'Viewer (view only)') : 'Volunteer');
 
 function NavItems({ onNavigate }) {
-  const { role, canCollectCash } = useAuth();
+  const { role, canCollectCash, canScan } = useAuth();
   const { pathname } = useLocation();
 
   const groups = GROUPS.map(g => ({
     ...g,
-    links: g.links.filter(l => l.roles.includes(role) && (!l.needsCash || role === 'admin' || canCollectCash)),
+    links: g.links.filter(l => l.roles.includes(role) && (!l.needsCash || role === 'admin' || canCollectCash) && (!l.needsScan || role !== 'viewer' || canScan)),
   })).filter(g => g.links.length);
 
   return (
@@ -111,7 +111,7 @@ function UserCard() {
   const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
   const logoutNow = () => {
-    const wasViewer = auth.role === 'viewer';
+    const wasViewer = auth.kind === 'devotee';
     auth.logout();
     navigate(wasViewer ? '/devotee' : '/admin/login');
   };

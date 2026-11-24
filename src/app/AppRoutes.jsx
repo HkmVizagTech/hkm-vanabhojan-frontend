@@ -4,6 +4,7 @@ import PageSpinner from '../components/common/PageSpinner';
 import RequireAuth from '../components/common/RequireAuth';
 import AdminLayout from '../components/layout/AdminLayout';
 import RequireCashAccess from '../components/common/RequireCashAccess';
+import RequireScanAccess from '../components/common/RequireScanAccess';
 
 // Every page is its own chunk: visitors to the registration page never download admin code (or xlsx, zxing...).
 const RegistrationPage = lazy(() => import(/* webpackChunkName: "page-registration" */ '../features/landing/RegistrationPage'));
@@ -22,7 +23,7 @@ const ScannerPage = lazy(() => import(/* webpackChunkName: "page-scanner" */ '..
 const EventsPage = lazy(() => import(/* webpackChunkName: "page-events" */ '../features/admin/events/EventsPage'));
 const InsightsPage = lazy(() => import(/* webpackChunkName: "page-insights" */ '../features/admin/insights/InsightsPage'));
 
-const STAFF = ['admin', 'user'];
+const STAFF = ['admin', 'user', 'viewer']; // viewers get only what an admin switched on for them (scanner, cash desk)
 const ADMIN_ONLY = ['admin'];
 const VIEWERS = ['admin', 'viewer']; // devotees signed in by WhatsApp code: look, never change
 
@@ -46,12 +47,14 @@ export default function AppRoutes() {
 
         <Route element={<RequireAuth allowedRoles={STAFF} />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin/adminqrscanner" element={<ScannerPage />} />
+            <Route element={<RequireScanAccess />}>
+              <Route path="/admin/adminqrscanner" element={<ScannerPage />} />
+              <Route path="/admin/AdminAttendanceScannedList" element={<ScannedListPage />} />
+              <Route path="/admin/qr" element={<QrLookupPage embedded />} />
+            </Route>
             <Route element={<RequireCashAccess />}>
               <Route path="/admin/cash" element={<CashDeskPage />} />
             </Route>
-            <Route path="/admin/AdminAttendanceScannedList" element={<ScannedListPage />} />
-            <Route path="/admin/qr" element={<QrLookupPage embedded />} />
             <Route element={<RequireAuth allowedRoles={ADMIN_ONLY} />}>
               <Route path="/admin/events" element={<EventsPage />} />
               <Route path="/admin/insights" element={<InsightsPage />} />

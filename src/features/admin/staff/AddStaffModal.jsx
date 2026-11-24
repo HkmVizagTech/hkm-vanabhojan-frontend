@@ -6,7 +6,7 @@ import { authApi } from '../../../services/auth';
 import { getErrorMessage } from '../../../services/http';
 import FormField from '../../../components/common/FormField';
 
-const empty = { name: '', email: '', password: '', role: 'user', canCollectCash: false };
+const empty = { name: '', email: '', password: '', role: 'user', canCollectCash: false, canScan: false };
 
 /** Creates a login. Only the super admin is offered the Admin role. */
 export default function AddStaffModal({ isOpen, onClose, canCreateAdmin, onCreated }) {
@@ -55,13 +55,25 @@ export default function AddStaffModal({ isOpen, onClose, canCreateAdmin, onCreat
             <FormField id="staff-password" label="Password" required hint="At least 8 characters. Share it with them privately.">
               <Input type="password" autoComplete="new-password" {...bind('password')} />
             </FormField>
-            <FormField id="staff-role" label="Role" hint="Volunteers can use the QR scanner and see the scanned list only.">
+            <FormField id="staff-role" label="Role" hint="Volunteers use the QR scanner. Viewers only look at the data; you can switch the scanner and cash desk on for them.">
               <Select {...bind('role')}>
                 <option value="user">Volunteer (scanner)</option>
+                <option value="viewer">Viewer (view only)</option>
                 {canCreateAdmin && <option value="admin">Admin</option>}
               </Select>
             </FormField>
-            {form.role === 'user' && (
+            {form.role === 'viewer' && (
+              <Checkbox
+                colorScheme="brand"
+                isChecked={form.canScan}
+                onChange={e => setForm(prev => ({ ...prev, canScan: e.target.checked }))}
+                alignItems="flex-start"
+              >
+                <Text fontWeight="semibold" lineHeight="1.2">Can use the QR scanner</Text>
+                <Text fontSize="xs" color="text.muted">Also gets the QR scanner, QR lookup and the scanned list.</Text>
+              </Checkbox>
+            )}
+            {(form.role === 'user' || form.role === 'viewer') && (
               <Checkbox
                 colorScheme="brand"
                 isChecked={form.canCollectCash}

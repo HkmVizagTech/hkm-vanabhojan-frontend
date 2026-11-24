@@ -13,8 +13,8 @@ const initialState = () => {
   const token = session.getToken();
   const role = session.getRole();
   return token && role
-    ? { status: 'unverified', role, userId: null, name: '', isSuperAdmin: false, canCollectCash: false }
-    : { status: 'anonymous', role: null, userId: null, name: '', isSuperAdmin: false, canCollectCash: false };
+    ? { status: 'unverified', role, userId: null, name: '', isSuperAdmin: false, canCollectCash: false, canScan: false, kind: null }
+    : { status: 'anonymous', role: null, userId: null, name: '', isSuperAdmin: false, canCollectCash: false, canScan: false, kind: null };
 };
 
 export function AuthProvider({ children }) {
@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => {
     session.clear();
-    setState({ status: 'anonymous', role: null, userId: null, name: '', isSuperAdmin: false, canCollectCash: false });
+    setState({ status: 'anonymous', role: null, userId: null, name: '', isSuperAdmin: false, canCollectCash: false, canScan: false, kind: null });
   }, []);
 
   useEffect(() => {
@@ -37,9 +37,9 @@ export function AuthProvider({ children }) {
     setState(prev => ({ ...prev, status: 'checking' }));
     try {
       const data = await authApi.validateToken();
-      const { role, id, name, isSuperAdmin, canCollectCash } = data.user;
+      const { role, id, name, isSuperAdmin, canCollectCash, canScan, kind } = data.user;
       session.saveRole(role);
-      setState({ status: 'authenticated', role, userId: id, name, isSuperAdmin: Boolean(isSuperAdmin), canCollectCash: Boolean(canCollectCash) });
+      setState({ status: 'authenticated', role, userId: id, name, isSuperAdmin: Boolean(isSuperAdmin), canCollectCash: Boolean(canCollectCash), canScan: Boolean(canScan), kind: kind || 'staff' });
     } catch {
       logout();
     } finally {
@@ -50,14 +50,14 @@ export function AuthProvider({ children }) {
   const login = useCallback(async credentials => {
     const data = await authApi.login(credentials);
     session.save({ token: data.token, role: data.role });
-    setState({ status: 'authenticated', role: data.role, userId: data.id, name: data.name, isSuperAdmin: Boolean(data.isSuperAdmin), canCollectCash: Boolean(data.canCollectCash) });
+    setState({ status: 'authenticated', role: data.role, userId: data.id, name: data.name, isSuperAdmin: Boolean(data.isSuperAdmin), canCollectCash: Boolean(data.canCollectCash), canScan: Boolean(data.canScan), kind: 'staff' });
     return data.role;
   }, []);
 
   // Devotees sign in with a WhatsApp code instead of a password; the server answers with the same token shape.
   const loginWithToken = useCallback(data => {
     session.save({ token: data.token, role: data.role });
-    setState({ status: 'authenticated', role: data.role, userId: data.id, name: data.name, isSuperAdmin: false, canCollectCash: false });
+    setState({ status: 'authenticated', role: data.role, userId: data.id, name: data.name, isSuperAdmin: false, canCollectCash: false, canScan: false, kind: null });
   }, []);
 
   const value = useMemo(() => ({ ...state, login, loginWithToken, logout, verify }), [state, login, loginWithToken, logout, verify]);

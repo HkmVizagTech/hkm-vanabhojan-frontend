@@ -54,6 +54,19 @@ export default function StaffPage() {
     }
   };
 
+  const toggleScan = async u => {
+    setBusyId(u._id);
+    try {
+      const updated = await authApi.updateUser(u._id, { canScan: !u.canScan });
+      setData(prev => prev.map(x => (x._id === u._id ? { ...x, ...updated } : x)));
+      toast({ title: updated.canScan ? `${u.name} can now use the scanner` : `${u.name} can no longer use the scanner`, status: 'success', duration: 3500 });
+    } catch (err) {
+      toast({ title: 'Could not update', description: getErrorMessage(err), status: 'error', duration: 5000, isClosable: true });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const remove = async () => {
     setBusyId(toDelete._id);
     try {
@@ -80,7 +93,7 @@ export default function StaffPage() {
       ),
     },
     { key: 'email', header: 'Email', render: u => u.email },
-    { key: 'role', header: 'Role', render: u => <Badge colorScheme={u.role === 'admin' ? 'orange' : 'blue'}>{u.role === 'admin' ? 'Admin' : 'Volunteer'}</Badge> },
+    { key: 'role', header: 'Role', render: u => <Badge colorScheme={u.role === 'admin' ? 'orange' : u.role === 'viewer' ? 'purple' : 'blue'}>{u.role === 'admin' ? 'Admin' : u.role === 'viewer' ? 'Viewer' : 'Volunteer'}</Badge> },
     { key: 'added', header: 'Added', render: u => formatDate(u.createdAt) },
     {
       key: 'status',
@@ -98,6 +111,28 @@ export default function StaffPage() {
                 aria-label={`${u.active !== false ? 'Disable' : 'Enable'} ${u.name}`}
               />
               <Badge colorScheme={u.active !== false ? 'green' : 'red'}>{u.active !== false ? 'Active' : 'Disabled'}</Badge>
+            </HStack>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      key: 'scan',
+      header: 'Scanner',
+      render: u => {
+        if (u.role !== 'viewer') return <Text fontSize="sm" color="text.muted">Always</Text>;
+        const reason = lockReason(u);
+        return (
+          <Tooltip label={reason} isDisabled={!reason} hasArrow>
+            <HStack spacing={2} display="inline-flex">
+              <Switch
+                colorScheme="brand"
+                isChecked={Boolean(u.canScan)}
+                isDisabled={Boolean(reason) || busyId === u._id}
+                onChange={() => toggleScan(u)}
+                aria-label={`${u.canScan ? 'Remove' : 'Give'} scanner access for ${u.name}`}
+              />
+              <Text fontSize="sm">{u.canScan ? 'Can scan' : 'No'}</Text>
             </HStack>
           </Tooltip>
         );
