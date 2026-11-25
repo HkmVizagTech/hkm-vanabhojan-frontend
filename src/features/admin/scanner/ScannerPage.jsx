@@ -40,6 +40,12 @@ function MemberCard({ member }) {
       </HStack>
       {member.email && <Text fontSize="sm"><b>Email:</b> {member.email}</Text>}
       {member.gender && <Text fontSize="sm"><b>Gender:</b> {member.gender}</Text>}
+      {member.team && (
+        <Box my={2} py={2} borderRadius="md" bg="orange.400" color="white" textAlign="center">
+          <Text fontSize="xs" letterSpacing="wider">GIVE BAND — TEAM</Text>
+          <Text fontSize="3xl" fontWeight="extrabold" lineHeight="short">{member.team}</Text>
+        </Box>
+      )}
       {member.college && <Text fontSize="sm"><b>College/Company:</b> {member.college}</Text>}
       {member.course && member.year && <Text fontSize="sm"><b>Course:</b> {member.course} - {ordinalYear(member.year)}</Text>}
     </Box>
