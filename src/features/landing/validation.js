@@ -17,7 +17,7 @@ export const initialValues = {
 };
 
 /** The payer plus up to this many more. */
-export const MAX_FAMILY_MEMBERS = 5;
+export const MAX_FAMILY_MEMBERS = 9;
 
 /** Number of people one payment covers. */
 export const peopleCount = values => 1 + (values.collegeOrWorking === 'Working' ? values.familyMembers.length : 0);
