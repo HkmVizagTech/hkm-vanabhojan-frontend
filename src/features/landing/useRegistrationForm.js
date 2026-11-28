@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useToast } from '@chakra-ui/react';
-import { FIELD_ORDER, initialValues, validateRegistration } from './validation';
+import { FIELD_ORDER, MAX_FAMILY_MEMBERS, initialValues, validateRegistration } from './validation';
 import { onlyDigits } from '../../utils/format';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -24,6 +24,18 @@ export function useRegistrationForm() {
     const value = name === 'whatsappNumber' ? onlyDigits(rawValue).slice(0, 10) : rawValue;
     setValues(prev => ({ ...prev, [name]: value }));
     setErrors(prev => (prev[name] ? { ...prev, [name]: '' } : prev));
+  }, []);
+
+  const addMember = useCallback(() => {
+    setValues(prev => (prev.familyMembers.length >= MAX_FAMILY_MEMBERS ? prev : { ...prev, familyMembers: [...prev.familyMembers, { name: '', gender: '' }] }));
+    setErrors(prev => (prev.familyMembers ? { ...prev, familyMembers: '' } : prev));
+  }, []);
+  const updateMember = useCallback((index, field, value) => {
+    setValues(prev => ({ ...prev, familyMembers: prev.familyMembers.map((m, i) => (i === index ? { ...m, [field]: value } : m)) }));
+    setErrors(prev => (prev.familyMembers ? { ...prev, familyMembers: '' } : prev));
+  }, []);
+  const removeMember = useCallback(index => {
+    setValues(prev => ({ ...prev, familyMembers: prev.familyMembers.filter((_, i) => i !== index) }));
   }, []);
 
   const clearIdCard = useCallback(() => {
@@ -61,5 +73,5 @@ export function useRegistrationForm() {
     return !first;
   }, [values, idCard.file]);
 
-  return { values, errors, setField, idCard, pickIdCard, clearIdCard, validate };
+  return { values, errors, setField, addMember, updateMember, removeMember, idCard, pickIdCard, clearIdCard, validate };
 }

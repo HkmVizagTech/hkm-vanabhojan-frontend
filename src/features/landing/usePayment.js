@@ -6,7 +6,7 @@ import { useCurrentEvent } from '../../context/CurrentEventContext';
 import { useRazorpay } from '../../hooks/useRazorpay';
 import { getErrorMessage } from '../../services/http';
 import { registrationApi } from '../../services/registration';
-import { feeFor } from './validation';
+import { feeFor, peopleCount } from './validation';
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -60,7 +60,7 @@ export function usePayment() {
       setIsPaying(true);
       try {
         const Razorpay = await loadRazorpay();
-        const amountInPaise = feeFor(event, payload.collegeOrWorking) * 100;
+        const amountInPaise = feeFor(event, payload.collegeOrWorking) * 100 * peopleCount(payload);
         const order = await registrationApi.createOrder({ amountInPaise, formData: payload, studentIdCard });
         if (!order?.id) throw new Error('Order creation failed');
 

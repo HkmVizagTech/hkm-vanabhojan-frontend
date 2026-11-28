@@ -13,7 +13,14 @@ export const initialValues = {
   year: '',
   dob: '',
   area: '',
+  familyMembers: [], // working professionals only: people covered by the same payment and QR
 };
+
+/** The payer plus up to this many more. */
+export const MAX_FAMILY_MEMBERS = 5;
+
+/** Number of people one payment covers. */
+export const peopleCount = values => 1 + (values.collegeOrWorking === 'Working' ? values.familyMembers.length : 0);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -39,6 +46,13 @@ export function validateRegistration(values, { hasIdCard = true } = {}) {
 
   if (isWorking && !values.companyName.trim()) e.companyName = 'Company name is required';
 
+  if (isWorking && values.familyMembers.length) {
+    const names = [values.name, ...values.familyMembers.map(m => m.name)].map(n => n.trim().toLowerCase());
+    if (values.familyMembers.some(m => !m.name.trim())) e.familyMembers = 'Enter a name for every family member';
+    else if (values.familyMembers.some(m => !m.gender)) e.familyMembers = 'Select gender for every family member';
+    else if (new Set(names).size !== names.length) e.familyMembers = 'Each person needs a different name';
+  }
+
   if (isCollege) {
     if (!values.college.trim()) e.college = 'College name is required';
     if (!values.course.trim()) e.course = 'Course is required';
@@ -51,7 +65,7 @@ export function validateRegistration(values, { hasIdCard = true } = {}) {
 /** Field order on screen, used to focus the first invalid field. */
 export const FIELD_ORDER = [
   'name', 'dob', 'whatsappNumber', 'email', 'area', 'gender', 'collegeOrWorking',
-  'companyName', 'college', 'course', 'year', 'studentIdCard',
+  'companyName', 'familyMembers', 'college', 'course', 'year', 'studentIdCard',
 ];
 
 /** Fee in rupees for a candidate type in the given (presented) event, or null when not chosen yet. */
@@ -65,5 +79,6 @@ export function buildPayload(values) {
     whatsappNumber: onlyDigits(values.whatsappNumber),
     college: values.college.trim(),
     area: values.area.trim(),
+    familyMembers: values.collegeOrWorking === 'Working' ? values.familyMembers.map(m => ({ name: m.name.trim(), gender: m.gender })) : [],
   };
 }

@@ -30,7 +30,7 @@ import Figure from '../../components/three/Figure';
 import { formatINR } from '../../utils/format';
 import FormField from '../../components/common/FormField';
 import { isInAppBrowser } from '../../utils/inAppBrowser';
-import { buildPayload, feeFor } from './validation';
+import { MAX_FAMILY_MEMBERS, buildPayload, feeFor, peopleCount } from './validation';
 import { useRegistrationForm } from './useRegistrationForm';
 import { usePayment } from './usePayment';
 
@@ -55,8 +55,9 @@ const collegeSelectStyles = dark => ({
   }),
 });
 
-function FeeBanner({ event, category }) {
-  const fee = feeFor(event, category);
+function FeeBanner({ event, category, people = 1 }) {
+  const unit = feeFor(event, category);
+  const fee = unit ? unit * people : unit;
   const info = event.fees[category];
   return (
     <Flex
@@ -77,7 +78,7 @@ function FeeBanner({ event, category }) {
         <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
           Registration fee
         </Text>
-        <Text fontSize="sm">{info ? info.label : 'Choose student or working below'}</Text>
+        <Text fontSize="sm">{info ? (people > 1 ? `${people} people × ${formatINR(unit)}` : info.label) : 'Choose student or working below'}</Text>
       </Box>
       <Text fontFamily="heading" fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold" lineHeight="1" whiteSpace="nowrap">
         {fee ? formatINR(fee) : `${formatINR(event.fees.College.amount)} / ${formatINR(event.fees.Working.amount)}`}
@@ -88,7 +89,7 @@ function FeeBanner({ event, category }) {
 
 export default function RegistrationForm() {
   const { event } = useCurrentEvent();
-  const { values, errors, setField, idCard, pickIdCard, clearIdCard, validate } = useRegistrationForm();
+  const { values, errors, setField, addMember, updateMember, removeMember, idCard, pickIdCard, clearIdCard, validate } = useRegistrationForm();
   const { pay, isPaying } = usePayment();
   const [colleges, setColleges] = useState([]);
   const inApp = useMemo(() => isInAppBrowser(), []);
@@ -108,6 +109,7 @@ export default function RegistrationForm() {
 
   const isCollege = values.collegeOrWorking === 'College';
   const isWorking = values.collegeOrWorking === 'Working';
+  const people = peopleCount(values);
   const today = new Date().toISOString().split('T')[0];
 
   const text = name => ({
@@ -124,7 +126,7 @@ export default function RegistrationForm() {
   const cta = isCollege
     ? `Register Now for ${formatINR(feeFor(event, 'College'))} (Student)`
     : isWorking
-      ? `Register Now for ${formatINR(feeFor(event, 'Working'))} (Professional)`
+      ? `Register Now for ${formatINR(feeFor(event, 'Working') * people)} (${people > 1 ? `${people} people` : 'Professional'})`
       : 'Register Now';
 
   return (
@@ -161,7 +163,7 @@ export default function RegistrationForm() {
         </Text>
         <form onSubmit={submit} noValidate>
           <Stack spacing={5}>
-            <FeeBanner event={event} category={values.collegeOrWorking} />
+            <FeeBanner event={event} category={values.collegeOrWorking} people={people} />
 
             <FormField id="name" label="Name" required error={errors.name}>
               <Input placeholder="Your full name" autoComplete="name" {...text('name')} />
@@ -230,6 +232,46 @@ export default function RegistrationForm() {
             {isWorking && (
               <FormField id="companyName" label="Company Name" required error={errors.companyName}>
                 <Input placeholder="Your company name" autoComplete="organization" {...text('companyName')} />
+              </FormField>
+            )}
+
+            {isWorking && (
+              <FormField
+                id="familyMembers"
+                label="Family or friends coming with you?"
+                error={errors.familyMembers}
+                hint={`Add them here and pay once for everyone. You all get one QR pass. Up to ${MAX_FAMILY_MEMBERS} more people.`}
+              >
+                <Stack spacing={3}>
+                  {values.familyMembers.map((member, i) => (
+                    <HStack key={i} align="flex-start" spacing={2}>
+                      <Input
+                        placeholder={`Name of person ${i + 2}`}
+                        aria-label={`Name of person ${i + 2}`}
+                        value={member.name}
+                        onChange={e => updateMember(i, 'name', e.target.value)}
+                      />
+                      <ChakraSelect
+                        maxW="130px"
+                        aria-label={`Gender of person ${i + 2}`}
+                        value={member.gender}
+                        onChange={e => updateMember(i, 'gender', e.target.value)}
+                      >
+                        <option value="">Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </ChakraSelect>
+                      <Button size="sm" mt="3px" variant="ghost" colorScheme="red" onClick={() => removeMember(i)} aria-label={`Remove person ${i + 2}`}>
+                        Remove
+                      </Button>
+                    </HStack>
+                  ))}
+                  {values.familyMembers.length < MAX_FAMILY_MEMBERS && (
+                    <Button size="sm" variant="outline" alignSelf="flex-start" onClick={addMember}>
+                      + Add a family member
+                    </Button>
+                  )}
+                </Stack>
               </FormField>
             )}
 
